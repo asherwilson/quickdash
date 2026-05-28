@@ -215,10 +215,13 @@ export function withStorefrontAuth(
 			}
 		}
 
-		// Scope CORS to the storefront's registered domain
-		const allowedOrigin = authResult.storefront.domain
+		// Scope CORS to the storefront's registered domain.
+		// In dev, also allow localhost origins so the storefront can be tested locally.
+		const requestOrigin = request.headers.get("origin")
+		const isLocalhost = requestOrigin?.match(/^https?:\/\/localhost(:\d+)?$/)
+		const allowedOrigin = authResult.storefront.domain && !isLocalhost
 			? `https://${authResult.storefront.domain}`
-			: request.headers.get("origin")
+			: requestOrigin
 
 		const response = await handler(request, authResult.storefront)
 		return addCorsHeaders(response, allowedOrigin)

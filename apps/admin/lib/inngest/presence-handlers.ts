@@ -8,7 +8,7 @@ import { lt } from "@quickdash/db/drizzle"
 // This cron is for DB fallback cleanup only
 export const cleanupStalePresence = inngest.createFunction(
 	{ id: "cleanup-stale-presence" },
-	{ cron: "*/15 * * * *" }, // Every 15 minutes (reduced from 5)
+	{ cron: "0 * * * *" }, // Every hour — primary presence is in Redis, this is fallback cleanup only
 	async ({ step }) => {
 		const staleThreshold = 5 * 60 * 1000 // 5 minutes in ms
 		const cutoff = new Date(Date.now() - staleThreshold)

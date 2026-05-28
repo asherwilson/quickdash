@@ -232,8 +232,10 @@ export const workflowScheduleHandler = inngest.createFunction(
 		id: "workflow-schedule-check",
 		name: "Workflow Schedule Check",
 	},
-	// Run every 5 minutes to check for scheduled workflows
-	{ cron: "*/5 * * * *" },
+	// Run every 30 minutes to check for scheduled workflows.
+	// Trade-off: scheduled workflows may have up to a 30-min delay, but the DB
+	// can auto-suspend between checks instead of being woken every 5 min.
+	{ cron: "*/30 * * * *" },
 	async ({ step }) => {
 		// Find all active scheduled workflows
 		const scheduledWorkflows = await step.run("find-scheduled-workflows", async () => {

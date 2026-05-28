@@ -1,10 +1,11 @@
 import { inngest } from "./inngest"
 import { polarHandlers } from "./inngest/polar-handlers"
 import { resendHandlers } from "./inngest/resend-handlers"
-import { presenceHandlers } from "./inngest/presence-handlers"
+// presenceHandlers and workflowHandlers are intentionally not imported — their
+// frequent cron schedules kept Neon awake 24/7 and burned the free-tier compute
+// quota. Re-import them when moving to a host without compute-hour billing.
 import { webhookDeliver, webhookDeliveryCleanup } from "./inngest/outgoing-webhooks"
 import { auctionHandlers } from "./inngest/auction-handlers"
-import { workflowHandlers } from "./inngest/workflow-handlers"
 import { emailHandlers } from "./inngest/email-handlers"
 
 // Order confirmation email
@@ -209,12 +210,17 @@ export const inngestFunctions = [
 	// Outgoing webhooks
 	webhookDeliver,
 	webhookDeliveryCleanup,
-	// Presence
-	...presenceHandlers,
+	// Presence — disabled: cleanupStalePresence cron kept the DB awake 24/7 and
+	// burned the Neon free-tier compute quota. Primary presence lives in Redis
+	// with auto-expiring keys, so the DB fallback cleanup isn't needed.
+	// ...presenceHandlers,
 	// Auctions
 	...auctionHandlers,
-	// Workflow execution engine
-	...workflowHandlers,
+	// Workflow execution engine — disabled for the same reason. Scheduled-workflow
+	// polling fired every 5 min and prevented Neon auto-suspend. Re-enable when
+	// on a host without compute-hour billing (e.g. Supabase) or when actually
+	// using scheduled workflows.
+	// ...workflowHandlers,
 	// Email queue
 	...emailHandlers,
 ]

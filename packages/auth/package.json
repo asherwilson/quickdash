@@ -10,7 +10,7 @@
 		"./server": "./src/server.ts"
 	},
 	"dependencies": {
-		"better-auth": "^1",
+		"better-auth": "^1.6.2",
 		"@quickdash/db": "workspace:*"
 	},
 	"devDependencies": {

@@ -133,7 +133,7 @@ export class Quickdash {
 
     // Add customer auth token if available
     if (this.customerToken) {
-      headers["Authorization"] = `Bearer ${this.customerToken}`
+      headers.Authorization = `Bearer ${this.customerToken}`
     }
 
     const controller = new AbortController()
@@ -228,7 +228,7 @@ class CategoriesResource {
    * List all categories
    */
   async list(): Promise<CategoriesResponse> {
-    return this.client.fetch("/categories")
+    return this.client.fetch("/categories?count=true")
   }
 }
 

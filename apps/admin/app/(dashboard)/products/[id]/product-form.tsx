@@ -64,6 +64,10 @@ interface ProductFormProps {
 	categories: Category[]
 }
 
+function getErrorMessage(error: unknown) {
+	return error instanceof Error ? error.message : "Something went wrong"
+}
+
 export function ProductForm({ product, categories }: ProductFormProps) {
 	const router = useRouter()
 	const isNew = !product
@@ -234,6 +238,10 @@ export function ProductForm({ product, categories }: ProductFormProps) {
 			toast.error("Price is required")
 			return
 		}
+		if (categories.length > 0 && !categoryId) {
+			toast.error("Choose a category so this product appears on the storefront")
+			return
+		}
 
 		setLoading(true)
 		try {
@@ -272,8 +280,8 @@ export function ProductForm({ product, categories }: ProductFormProps) {
 			}
 			router.push("/products")
 			router.refresh()
-		} catch (e: any) {
-			toast.error(e.message)
+		} catch (e: unknown) {
+			toast.error(getErrorMessage(e))
 		} finally {
 			setLoading(false)
 		}
@@ -290,13 +298,13 @@ export function ProductForm({ product, categories }: ProductFormProps) {
 				name: newVariant.name,
 				sku: newVariant.sku,
 				price: newVariant.price || undefined,
-				quantity: parseInt(newVariant.quantity) || 0,
+				quantity: parseInt(newVariant.quantity, 10) || 0,
 			})
-			setVariants([...variants, { ...variant, quantity: parseInt(newVariant.quantity) || 0, reservedQuantity: 0, lowStockThreshold: 10 }])
+			setVariants([...variants, { ...variant, quantity: parseInt(newVariant.quantity, 10) || 0, reservedQuantity: 0, lowStockThreshold: 10 }])
 			setNewVariant({ name: "", sku: "", price: "", quantity: "0" })
 			toast.success("Variant added")
-		} catch (e: any) {
-			toast.error(e.message)
+		} catch (e: unknown) {
+			toast.error(getErrorMessage(e))
 		}
 	}
 
@@ -305,8 +313,8 @@ export function ProductForm({ product, categories }: ProductFormProps) {
 			await deleteVariant(id)
 			setVariants(variants.filter((v) => v.id !== id))
 			toast.success("Variant removed")
-		} catch (e: any) {
-			toast.error(e.message)
+		} catch (e: unknown) {
+			toast.error(getErrorMessage(e))
 		}
 	}
 
@@ -529,7 +537,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
 								<Label htmlFor="category">Category</Label>
 								<Select value={categoryId || "none"} onValueChange={(val) => setCategoryId(val === "none" ? "" : val)}>
 									<SelectTrigger className="w-full">
-										<SelectValue placeholder="No category" />
+										<SelectValue placeholder="Select category" />
 									</SelectTrigger>
 									<SelectContent>
 										<SelectItem value="none">No category</SelectItem>
@@ -538,6 +546,9 @@ export function ProductForm({ product, categories }: ProductFormProps) {
 										))}
 									</SelectContent>
 								</Select>
+								<p className="text-xs text-muted-foreground">
+									Products need a category to appear on Gemsutopia category pages.
+								</p>
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="sourceType">Source Type</Label>

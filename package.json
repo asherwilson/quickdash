@@ -21,40 +21,6 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.11",
 		"dotenv": "^16.6.1",
-		"turbo": "^2"
-	},
-	"pnpm": {
-		"overrides": {
-			"protobufjs": "^8.0.1",
-			"axios": "^1.15.1",
-			"hono": "^4.12.18",
-			"@isaacs/brace-expansion": "^5.0.1",
-			"brace-expansion": "^2.0.3",
-			"dompurify": "^3.4.0",
-			"path-to-regexp": "^0.1.12",
-			"qs": "^6.15.2",
-			"lodash": "^4.17.21",
-			"minimatch": "^10.2.3",
-			"markdown-it": "^14.1.1",
-			"serialize-javascript": "^7.0.3",
-			"follow-redirects": "^1.15.6",
-			"ip-address": "^10.1.1",
-			"fast-uri": "^3.1.2",
-			"ajv": "^8.18.0",
-			"yaml": "^2.8.3",
-			"postcss": "^8.5.10",
-			"uuid": "^11.1.1",
-			"@opentelemetry/auto-instrumentations-node": "^0.75.0",
-			"@opentelemetry/sdk-node": "^0.217.0",
-			"@opentelemetry/exporter-prometheus": "^0.217.0",
-			"rollup": "^4.59.0",
-			"picomatch": "^2.3.2",
-			"express-rate-limit": "^8.2.2",
-			"defu": "^6.1.5",
-			"@hono/node-server": "^1.19.10",
-			"undici": "^6.24.0",
-			"kysely": "^0.28.14",
-			"h3": "^1.15.6"
-		}
+		"turbo": "^2.10.0"
 	}
 }

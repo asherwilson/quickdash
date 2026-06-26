@@ -1,0 +1,57 @@
+# Quickdash Changelog - Codex Session Log
+
+## Session - 2026-06-26
+
+### Completed
+- Investigated why newly created Quickdash products/categories may not appear on Gemsutopia.
+- Reviewed storefront product/category API routes, admin product/category create actions, schema, SDK client, package manifests, and workspace package config.
+- Fixed storefront category product counts so the count is scoped to the authenticated storefront workspace.
+- Fixed SDK category listing to request `?count=true`, matching the SDK type that promises `productCount`.
+- Verified the current Gemsutopia storefront key against the live Quickdash API: the key is valid and returns 5 categories plus 1 active product.
+- Confirmed the active product returned by the API has no category, so all category product counts are 0 and Gemsutopia category pages render empty.
+- Added a Quickdash product form guard that requires a category when categories exist, plus helper copy explaining that categorized products are required for Gemsutopia category pages.
+- Added `.pnpm-store/` to `.gitignore` after finding a repo-local pnpm cache with 85,345 files.
+- Repaired pnpm workspace security override placement for pnpm 11 compatibility:
+  - Moved active overrides from root `package.json` into `pnpm-workspace.yaml`.
+  - Removed stale nested `apps/web/pnpm-workspace.yaml`.
+  - Added current advisory override floors for transitive packages.
+  - Bumped root `turbo` dev dependency floor to `^2.10.0`.
+- Refreshed `pnpm-lock.yaml` with lockfile-only installs.
+
+### Files Changed
+- `apps/admin/app/api/storefront/categories/route.ts`
+- `apps/admin/app/(dashboard)/products/[id]/product-form.tsx`
+- `packages/sdk/src/client.ts`
+- `package.json`
+- `pnpm-workspace.yaml`
+- `pnpm-lock.yaml`
+- `.gitignore`
+- `apps/web/pnpm-workspace.yaml` (removed)
+- `.Codex/changelog.md`
+
+### Findings
+- Storefront product lists only return products where `isActive = true`; inactive products will not show on Gemsutopia.
+- Storefront access is fully determined by `X-Storefront-Key`; if Gemsutopia uses an old key or a key from another workspace, new records from the current workspace will not show.
+- Gemsutopia category pages only show products assigned to the matching Quickdash category. Creating a product with no category makes it effectively invisible from those category pages even when it is active.
+- The Gemsutopia site only needs a Storefront API key for reads/customer-safe operations. An Admin/API key is only needed for trusted server-side management writes and must never be exposed as `NEXT_PUBLIC_*`.
+- Product/category slugs are globally unique in the schema, not workspace-scoped. This can block duplicate slugs across tenants and should be migrated to workspace-scoped unique indexes.
+- `pnpm lint` now clears pnpm's build-script approval guard, but fails on existing repo lint debt:
+  - `apps/web` ESLint crashes in `@eslint/eslintrc`/AJV.
+  - `apps/admin` Biome reports a large pre-existing formatting/rule backlog.
+- Audit is reduced to two remaining high advisories, both from `xlsx@0.18.5`.
+- The local `.env.local` points to Postgres on `localhost:5434`; the DB was not running, so live Gemsutopia workspace data could not be verified from this checkout.
+- A repo-local `.pnpm-store` cache existed with 85,345 files and about 1.2GB of data. It should not be committed.
+
+### Verification
+- `pnpm audit --json` now reports only `xlsx` advisories: 2 high, 0 critical.
+- `biome lint apps/admin/app/api/storefront/categories/route.ts packages/sdk/src/client.ts` passed.
+- `biome lint apps/admin/app/(dashboard)/products/[id]/product-form.tsx apps/admin/app/api/storefront/categories/route.ts packages/sdk/src/client.ts` passed.
+- `tsc --noEmit -p packages/sdk/tsconfig.json` passed via the local TypeScript package.
+- `tsc --noEmit -p apps/admin/tsconfig.json` passed via the local TypeScript package.
+
+### What's Next
+- Update existing uncategorized products in Reese's Quickdash workspace by assigning a category, then refresh/deploy Gemsutopia.
+- Confirm Gemsutopia production has `NEXT_PUBLIC_STOREFRONT_API_KEY` and `NEXT_PUBLIC_STOREFRONT_URL` set to the current Quickdash workspace values.
+- Replace `xlsx` or switch to the maintained SheetJS distribution source to clear the last audit advisories.
+- Add a database migration to make product/category slugs unique per workspace instead of globally unique.
+- Triage full lint separately: fix the web ESLint/AJV crash, then decide whether to mass-format admin or relax formatting checks.

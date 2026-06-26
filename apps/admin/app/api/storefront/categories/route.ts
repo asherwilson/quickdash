@@ -1,7 +1,7 @@
-import { type NextRequest } from "next/server"
+import type { NextRequest } from "next/server"
 import { db } from "@quickdash/db/client"
 import { eq, and, isNull, sql } from "@quickdash/db/drizzle"
-import { categories, products } from "@quickdash/db/schema"
+import { categories } from "@quickdash/db/schema"
 import { withStorefrontAuth, handleCorsOptions, type StorefrontContext } from "@/lib/storefront-auth"
 
 async function handleGet(request: NextRequest, storefront: StorefrontContext) {
@@ -38,6 +38,7 @@ async function handleGet(request: NextRequest, storefront: StorefrontContext) {
 				productCount: sql<number>`(
 					SELECT COUNT(*) FROM products
 					WHERE products.category_id = ${categories.id}
+					AND products.workspace_id = ${storefront.workspaceId}
 					AND products.is_active = true
 				)`,
 			})

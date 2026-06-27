@@ -57,6 +57,7 @@ const pages = [
   { title: "Media Library", url: "/content/media" },
   { title: "Auctions", url: "/auctions" },
   { title: "Activity Log", url: "/activity-log" },
+  { title: "Developer Tools", url: "/developers" },
   { title: "Developer Notes", url: "/developers/notes" },
   { title: "API Keys", url: "/developers/api-keys" },
   { title: "Webhooks", url: "/developers/webhooks" },

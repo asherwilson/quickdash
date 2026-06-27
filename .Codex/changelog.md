@@ -74,6 +74,10 @@
 - Removed Discover/new-people entry points from the workspace rail, command palette, dashboard route, and onboarding flow.
 - Removed Automation from the Operations sidebar section and command palette, then soft-disabled Automation routes with redirects.
 - Removed Permissions from the Settings sidebar submenu.
+- Removed the standalone Developers, System/Settings, and Growth sidebar sections.
+- Moved Marketing and Content into the Operations sidebar section while keeping their routes intact.
+- Added a toolbar Settings dropdown beside search for settings routes, Activity Log, and Developer Tools.
+- Moved Developer Tools into the toolbar Settings dropdown and nested API Keys under Developer Tools without deleting any developer routes.
 
 ### Files Changed
 - `apps/admin/app/api/storefront/categories/route.ts`
@@ -131,6 +135,8 @@
 - Billing removal has to include secondary links like storage usage and feature-gate upgrade CTAs, otherwise retired billing routes remain reachable from locked-feature screens.
 - Discover/new-people was also present in onboarding, not only the dashboard workspace rail.
 - Automation still has deeper editor/actions/constants code behind redirects; that can be deleted in a later deeper-code pass after the visible product shape is settled.
+- Developer routes remain intact after the sidebar restructure; only their navigation entry point moved into the toolbar Settings dropdown.
+- Settings routes also remain intact, but are no longer shown as a sidebar section.
 - The first pass intentionally leaves deeper route folders, actions, schemas, and dependencies in place for a later deletion pass so ecommerce/product/order flows remain low-risk.
 - The ecommerce core is present and worth preserving: dashboard, analytics, orders, products, categories, variants, reviews, auctions, customers, inventory, subscriptions, shipping, suppliers, storefront API, storefront settings, payment settings, tax, team/settings, and API keys/webhooks.
 - The strongest removal candidates are automation/workflows, marketing campaigns/email/referrals/SEO, CRM/sales/calls/scheduling, notifications/messages/activity-log duplication, billing/pricing/Polar subscription gating, music/social/server/presence features, and generic content/blog/pages if Quickdash is being narrowed to ecommerce store operations.
@@ -144,6 +150,7 @@
 - Focused Biome lint passed for the breadcrumb crash fix, CRM sidebar/search removal, and CRM/Scheduling redirect files.
 - Focused Biome lint passed for Recent/Billing/Discover removal, billing/discover redirects, and onboarding flow adjustments.
 - Focused Biome lint passed for Automation/Permissions sidebar cleanup and Automation route redirects.
+- Focused Biome lint passed for the sidebar/settings/developer navigation restructure.
 - `tsc --noEmit -p apps/admin/tsconfig.json` passed using the app-local TypeScript binary.
 - `pnpm exec` commands are currently blocked by pnpm attempting an interactive modules purge; direct local binaries work.
 

@@ -1,16 +1,5 @@
-import { requireWorkspace } from "@/lib/workspace"
-import { FeatureGatePage } from "@/components/feature-gate"
+import { redirect } from "next/navigation"
 
-export default async function SchedulingLayout({
-	children,
-}: {
-	children: React.ReactNode
-}) {
-	const workspace = await requireWorkspace()
-
-	if (!workspace.features.scheduling) {
-		return <FeatureGatePage feature="scheduling" features={workspace.features} featureName="Scheduling" />
-	}
-
-	return <>{children}</>
+export default function SchedulingLayout() {
+	redirect("/")
 }

@@ -67,6 +67,8 @@
 - Tightened Storefront API CORS handling so registered storefront domains tolerate protocol and `www`/non-`www` differences instead of failing deployed browser requests on exact-domain mismatches.
 - Removed the first layer of communication bloat from the admin shell: global calls provider/overlays, message sound listener, notification provider, right sidebar panel, header notification/call/friend controls, workspace-bar Messages/Calls buttons, notification nav, sales calls nav, command-palette entries, and related shortcuts.
 - Soft-disabled legacy messaging/calling/notification entry pages by redirecting them back to the dashboard or settings instead of loading the retired UI.
+- Fixed the post-cleanup global crash by removing the last dashboard-level `useChat` dependency from breadcrumbs after `ChatProvider` was removed.
+- Removed the CRM section from the admin sidebar and command palette, then soft-disabled CRM/Sales and Scheduling routes with redirects.
 
 ### Files Changed
 - `apps/admin/app/api/storefront/categories/route.ts`
@@ -79,7 +81,19 @@
 - `apps/admin/app/(dashboard)/notifications/alerts/page.tsx`
 - `apps/admin/app/(dashboard)/settings/notifications/page.tsx`
 - `apps/admin/app/(dashboard)/sales/calls/page.tsx`
+- `apps/admin/app/(dashboard)/sales/layout.tsx`
+- `apps/admin/app/(dashboard)/sales/contacts/page.tsx`
+- `apps/admin/app/(dashboard)/sales/contacts/[id]/page.tsx`
+- `apps/admin/app/(dashboard)/sales/companies/page.tsx`
+- `apps/admin/app/(dashboard)/sales/companies/[id]/page.tsx`
+- `apps/admin/app/(dashboard)/sales/deals/page.tsx`
+- `apps/admin/app/(dashboard)/sales/deals/[id]/page.tsx`
+- `apps/admin/app/(dashboard)/sales/pipeline/page.tsx`
+- `apps/admin/app/(dashboard)/sales/tasks/page.tsx`
+- `apps/admin/app/(dashboard)/scheduling/layout.tsx`
+- `apps/admin/app/(dashboard)/scheduling/page.tsx`
 - `apps/admin/components/app-sidebar.tsx`
+- `apps/admin/components/breadcrumb-nav.tsx`
 - `apps/admin/components/command-menu.tsx`
 - `apps/admin/components/header-toolbar.tsx`
 - `apps/admin/components/keyboard-shortcuts.tsx`
@@ -93,6 +107,7 @@
 - The live Storefront API returns category/product data correctly after the category-count fix, so an empty deployed Gemsutopia categories page points to a frontend browser fetch issue such as CORS, missing production env, or a client-side runtime error.
 - Storefront CORS was previously pinned to `https://${storefront.domain}`, which can block legitimate storefronts when the saved domain includes a protocol or the deployed site uses the opposite `www` form.
 - Messaging, calling, notifications, and the right sidebar were deeply mounted in the global dashboard shell, so removing visible entry points alone was not enough; the first cleanup pass also needed to remove always-on providers/listeners.
+- Breadcrumbs still depended on chat state after `ChatProvider` was removed, which caused the live dashboard to crash globally until the breadcrumb special-case was removed.
 - The first pass intentionally leaves deeper route folders, actions, schemas, and dependencies in place for a later deletion pass so ecommerce/product/order flows remain low-risk.
 - The ecommerce core is present and worth preserving: dashboard, analytics, orders, products, categories, variants, reviews, auctions, customers, inventory, subscriptions, shipping, suppliers, storefront API, storefront settings, payment settings, tax, team/settings, and API keys/webhooks.
 - The strongest removal candidates are automation/workflows, marketing campaigns/email/referrals/SEO, CRM/sales/calls/scheduling, notifications/messages/activity-log duplication, billing/pricing/Polar subscription gating, music/social/server/presence features, and generic content/blog/pages if Quickdash is being narrowed to ecommerce store operations.
@@ -103,6 +118,7 @@
 - `biome lint apps/admin/app/api/storefront/categories/route.ts apps/admin/lib/storefront-auth.ts` passed using the local binary.
 - `biome lint apps/admin/lib/storefront-auth.ts` passed using the local binary.
 - Focused Biome lint passed for the changed dashboard shell/navigation/redirect files.
+- Focused Biome lint passed for the breadcrumb crash fix, CRM sidebar/search removal, and CRM/Scheduling redirect files.
 - `tsc --noEmit -p apps/admin/tsconfig.json` passed using the app-local TypeScript binary.
 - `pnpm exec` commands are currently blocked by pnpm attempting an interactive modules purge; direct local binaries work.
 

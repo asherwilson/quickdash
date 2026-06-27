@@ -20,7 +20,6 @@ import {
   StarIcon,
   UserGroupIcon,
   SourceCodeIcon,
-  UserIcon,
   Building03Icon,
   SaleTag01Icon,
   CheckListIcon,
@@ -214,36 +213,6 @@ const data = {
         { title: "Loyalty & Rewards", url: "/customers/loyalty" },
         { title: "Gift Cards", url: "/customers/gift-cards" },
       ],
-    },
-  ],
-  navCRM: [
-    {
-      title: "Contacts",
-      url: "/sales/contacts",
-      icon: UserIcon,
-      items: [
-        { title: "All Contacts", url: "/sales/contacts" },
-        { title: "Companies", url: "/sales/companies" },
-      ],
-    },
-    {
-      title: "Deals",
-      url: "/sales/deals",
-      icon: SaleTag01Icon,
-      items: [
-        { title: "All Deals", url: "/sales/deals" },
-        { title: "Pipeline", url: "/sales/pipeline" },
-      ],
-    },
-    {
-      title: "Tasks",
-      url: "/sales/tasks",
-      icon: CheckListIcon,
-    },
-    {
-      title: "Scheduling",
-      url: "/scheduling",
-      icon: Calendar01Icon,
     },
   ],
   navOperations: [
@@ -880,7 +849,6 @@ function NormalSidebarContent({
   navOverview,
   navOperations,
   navStore,
-  navCRM,
   navDevelopers,
   sidebarState
 }: {
@@ -889,7 +857,6 @@ function NormalSidebarContent({
   navOverview: typeof data.navOverview
   navOperations: typeof data.navOperations
   navStore: typeof data.navStore
-  navCRM: typeof data.navCRM
   navDevelopers: typeof data.navDevelopers
   sidebarState: ReturnType<typeof useSidebarStateProvider>
 }) {
@@ -910,7 +877,6 @@ function NormalSidebarContent({
       <NavMain label="Store" labelIcon={Building03Icon} items={navStore} />
       <NavMain label="Operations" labelIcon={Layers01Icon} items={navOperations} />
       <NavMain label="Growth" labelIcon={RocketIcon} items={navGrowth} />
-      <NavMain label="CRM" labelIcon={SaleTag01Icon} items={navCRM} />
       <NavMain label="Billing" labelIcon={Invoice02Icon} items={data.navBilling} />
       <NavMain label="System" labelIcon={Settings02Icon} items={navSystem} />
       <NavMain label="Developers" labelIcon={SourceCodeIcon} items={navDevelopers} />
@@ -1073,19 +1039,6 @@ export function AppSidebar({
     })
   }, [features, lockSub])
 
-  // Gate CRM section — lock entire section if crm disabled
-  const navCRM = React.useMemo(() => {
-    return data.navCRM.map((item) => {
-      if (item.title === "Scheduling" && features && !features.scheduling) {
-        return { ...item, locked: true }
-      }
-      if (features && !features.crm && item.title !== "Scheduling") {
-        return { ...item, locked: true }
-      }
-      return item
-    })
-  }, [features])
-
   // Gate Developers section
   const navDevelopers = React.useMemo(() => {
     return data.navDevelopers.map((item) => {
@@ -1134,7 +1087,7 @@ export function AppSidebar({
                 {isWorkflowMode ? (
                   <WorkflowSidebarContent />
                 ) : (
-                  <NormalSidebarContent navSystem={navSystem} navGrowth={navGrowth} navOverview={navOverview} navOperations={navOperations} navStore={navStore} navCRM={navCRM} navDevelopers={navDevelopers} sidebarState={sidebarState} />
+                  <NormalSidebarContent navSystem={navSystem} navGrowth={navGrowth} navOverview={navOverview} navOperations={navOperations} navStore={navStore} navDevelopers={navDevelopers} sidebarState={sidebarState} />
                 )}
               </SidebarContent>
               <SidebarFooter>
@@ -1159,7 +1112,7 @@ export function AppSidebar({
               {isWorkflowMode ? (
                 <WorkflowSidebarContent />
               ) : (
-                <NormalSidebarContent navSystem={navSystem} navGrowth={navGrowth} navOverview={navOverview} navOperations={navOperations} navStore={navStore} navCRM={navCRM} navDevelopers={navDevelopers} sidebarState={sidebarState} />
+                <NormalSidebarContent navSystem={navSystem} navGrowth={navGrowth} navOverview={navOverview} navOperations={navOperations} navStore={navStore} navDevelopers={navDevelopers} sidebarState={sidebarState} />
               )}
             </SidebarContent>
             <SidebarFooter>

@@ -69,6 +69,9 @@
 - Soft-disabled legacy messaging/calling/notification entry pages by redirecting them back to the dashboard or settings instead of loading the retired UI.
 - Fixed the post-cleanup global crash by removing the last dashboard-level `useChat` dependency from breadcrumbs after `ChatProvider` was removed.
 - Removed the CRM section from the admin sidebar and command palette, then soft-disabled CRM/Sales and Scheduling routes with redirects.
+- Removed the Recent section from the admin sidebar.
+- Removed Billing from sidebar/search, converted billing dashboard/subpages to redirects, removed the storage footer billing link, and changed feature-gate upgrade CTAs into disabled unavailable states.
+- Removed Discover/new-people entry points from the workspace rail, command palette, dashboard route, and onboarding flow.
 
 ### Files Changed
 - `apps/admin/app/api/storefront/categories/route.ts`
@@ -92,12 +95,22 @@
 - `apps/admin/app/(dashboard)/sales/tasks/page.tsx`
 - `apps/admin/app/(dashboard)/scheduling/layout.tsx`
 - `apps/admin/app/(dashboard)/scheduling/page.tsx`
+- `apps/admin/app/(dashboard)/billing/page.tsx`
+- `apps/admin/app/(dashboard)/billing/invoices/page.tsx`
+- `apps/admin/app/(dashboard)/billing/payment-methods/page.tsx`
+- `apps/admin/app/(dashboard)/billing/usage/page.tsx`
+- `apps/admin/app/(dashboard)/discover/page.tsx`
+- `apps/admin/app/onboarding/profile-step.tsx`
+- `apps/admin/app/onboarding/workspace/workspace-step.tsx`
+- `apps/admin/app/onboarding/discover/page.tsx`
 - `apps/admin/components/app-sidebar.tsx`
 - `apps/admin/components/breadcrumb-nav.tsx`
 - `apps/admin/components/command-menu.tsx`
+- `apps/admin/components/feature-gate.tsx`
 - `apps/admin/components/header-toolbar.tsx`
 - `apps/admin/components/keyboard-shortcuts.tsx`
 - `apps/admin/components/nav-main.tsx`
+- `apps/admin/components/storage-indicator.tsx`
 - `apps/admin/components/workspace-sidebar.tsx`
 - `apps/admin/lib/keybindings.ts`
 - `.Codex/changelog.md`
@@ -108,6 +121,8 @@
 - Storefront CORS was previously pinned to `https://${storefront.domain}`, which can block legitimate storefronts when the saved domain includes a protocol or the deployed site uses the opposite `www` form.
 - Messaging, calling, notifications, and the right sidebar were deeply mounted in the global dashboard shell, so removing visible entry points alone was not enough; the first cleanup pass also needed to remove always-on providers/listeners.
 - Breadcrumbs still depended on chat state after `ChatProvider` was removed, which caused the live dashboard to crash globally until the breadcrumb special-case was removed.
+- Billing removal has to include secondary links like storage usage and feature-gate upgrade CTAs, otherwise retired billing routes remain reachable from locked-feature screens.
+- Discover/new-people was also present in onboarding, not only the dashboard workspace rail.
 - The first pass intentionally leaves deeper route folders, actions, schemas, and dependencies in place for a later deletion pass so ecommerce/product/order flows remain low-risk.
 - The ecommerce core is present and worth preserving: dashboard, analytics, orders, products, categories, variants, reviews, auctions, customers, inventory, subscriptions, shipping, suppliers, storefront API, storefront settings, payment settings, tax, team/settings, and API keys/webhooks.
 - The strongest removal candidates are automation/workflows, marketing campaigns/email/referrals/SEO, CRM/sales/calls/scheduling, notifications/messages/activity-log duplication, billing/pricing/Polar subscription gating, music/social/server/presence features, and generic content/blog/pages if Quickdash is being narrowed to ecommerce store operations.
@@ -119,6 +134,7 @@
 - `biome lint apps/admin/lib/storefront-auth.ts` passed using the local binary.
 - Focused Biome lint passed for the changed dashboard shell/navigation/redirect files.
 - Focused Biome lint passed for the breadcrumb crash fix, CRM sidebar/search removal, and CRM/Scheduling redirect files.
+- Focused Biome lint passed for Recent/Billing/Discover removal, billing/discover redirects, and onboarding flow adjustments.
 - `tsc --noEmit -p apps/admin/tsconfig.json` passed using the app-local TypeScript binary.
 - `pnpm exec` commands are currently blocked by pnpm attempting an interactive modules purge; direct local binaries work.
 

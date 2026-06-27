@@ -291,7 +291,7 @@ export function ProfileStep({ user }: ProfileStepProps) {
 			if (result.error) {
 				setError(result.error)
 			} else {
-				router.push("/onboarding/discover")
+				router.push("/onboarding/workspace")
 			}
 		})
 	}
@@ -357,6 +357,7 @@ export function ProfileStep({ user }: ProfileStepProps) {
 						className="h-32 sm:h-40 bg-muted"
 					>
 						{bannerImage ? (
+							// biome-ignore lint/performance/noImgElement: Onboarding previews user-selected local/blob image URLs.
 							<img src={bannerImage} alt="Banner" className="w-full h-full object-cover" />
 						) : (
 							<div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5" />
@@ -403,7 +404,8 @@ export function ProfileStep({ user }: ProfileStepProps) {
 				<div className="px-4 pb-6">
 					{/* Avatar - overlapping banner */}
 					<div className="relative -mt-12 sm:-mt-16 mb-3">
-						<div
+						<button
+							type="button"
 							className="relative cursor-pointer group w-fit"
 							onClick={() => avatarInputRef.current?.click()}
 						>
@@ -421,7 +423,7 @@ export function ProfileStep({ user }: ProfileStepProps) {
 									<Loader2 className="size-6 text-white animate-spin" />
 								</div>
 							)}
-						</div>
+						</button>
 						<input
 							ref={avatarInputRef}
 							type="file"
@@ -455,6 +457,7 @@ export function ProfileStep({ user }: ProfileStepProps) {
 							/>
 						) : (
 							<button
+								type="button"
 								onClick={() => setEditingName(true)}
 								className="group flex items-center gap-2 hover:bg-muted rounded px-2 py-1 -ml-2 transition-colors"
 							>
@@ -499,6 +502,7 @@ export function ProfileStep({ user }: ProfileStepProps) {
 							</div>
 						) : (
 							<button
+								type="button"
 								onClick={() => setEditingUsername(true)}
 								className="group flex items-center gap-2 hover:bg-muted rounded px-2 py-0.5 -ml-2 transition-colors"
 							>
@@ -533,6 +537,7 @@ export function ProfileStep({ user }: ProfileStepProps) {
 							/>
 						) : (
 							<button
+								type="button"
 								onClick={() => setEditingBio(true)}
 								className="group flex items-start gap-2 hover:bg-muted rounded px-2 py-1 -ml-2 transition-colors w-full text-left"
 							>
@@ -570,6 +575,7 @@ export function ProfileStep({ user }: ProfileStepProps) {
 								/>
 							) : (
 								<button
+									type="button"
 									onClick={() => setEditingLocation(true)}
 									className="group flex items-center gap-1 hover:bg-muted rounded px-1 py-0.5 transition-colors flex-1 text-left"
 								>
@@ -601,6 +607,7 @@ export function ProfileStep({ user }: ProfileStepProps) {
 								/>
 							) : (
 								<button
+									type="button"
 									onClick={() => setEditingWebsite(true)}
 									className="group flex items-center gap-1 hover:bg-muted rounded px-1 py-0.5 transition-colors flex-1 text-left"
 								>
@@ -632,6 +639,7 @@ export function ProfileStep({ user }: ProfileStepProps) {
 								/>
 							) : (
 								<button
+									type="button"
 									onClick={() => setEditingOccupation(true)}
 									className="group flex items-center gap-1 hover:bg-muted rounded px-1 py-0.5 transition-colors flex-1 text-left"
 								>
@@ -737,7 +745,7 @@ export function ProfileStep({ user }: ProfileStepProps) {
 					variant="ghost"
 					size="sm"
 					className="text-muted-foreground"
-					onClick={() => router.push("/onboarding/discover")}
+					onClick={() => router.push("/onboarding/workspace")}
 					disabled={isPending}
 				>
 					Skip for now

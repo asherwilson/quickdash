@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { Progress } from "@/components/ui/progress"
-import Link from "next/link"
 
 type StorageData = {
 	usedBytes: number
@@ -35,10 +34,10 @@ export function StorageIndicator() {
 	const isCritical = !isUnlimited && pct > 95
 
 	return (
-		<Link href="/billing" className="block px-3 py-2 group">
+		<div className="px-3 py-2">
 			<div className="space-y-1.5">
 				<div className="flex items-center justify-between">
-					<span className="text-[11px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">Storage</span>
+					<span className="text-[11px] font-medium text-muted-foreground">Storage</span>
 					<span className={`text-[11px] ${isCritical ? "text-destructive" : isWarning ? "text-yellow-600 dark:text-yellow-500" : "text-muted-foreground"}`}>
 						{formatBytes(data.usedBytes)}{isUnlimited ? "" : ` / ${formatBytes(data.maxBytes)}`}
 					</span>
@@ -50,6 +49,6 @@ export function StorageIndicator() {
 					/>
 				)}
 			</div>
-		</Link>
+		</div>
 	)
 }

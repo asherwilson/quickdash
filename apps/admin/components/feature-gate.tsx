@@ -2,7 +2,6 @@
 
 import { Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
 import type { WorkspaceFeatures } from "@quickdash/db/schema"
 
 export function FeatureGate({
@@ -28,19 +27,15 @@ export function FeatureGate({
 			<div className="space-y-2">
 				<h2 className="text-lg font-semibold">{featureName} is not available on your plan</h2>
 				<p className="text-sm text-muted-foreground max-w-md">
-					Upgrade your subscription to unlock {featureName.toLowerCase()} and other premium features.
+					This feature is currently disabled while Quickdash is being focused around core commerce workflows.
 				</p>
 			</div>
-			<Button asChild>
-				<Link href="/billing">Upgrade Plan</Link>
-			</Button>
+			<Button disabled>Unavailable</Button>
 		</div>
 	)
 }
 
 export function FeatureGatePage({
-	feature,
-	features,
 	featureName,
 }: {
 	feature: keyof WorkspaceFeatures
@@ -55,12 +50,10 @@ export function FeatureGatePage({
 			<div className="space-y-2">
 				<h2 className="text-lg font-semibold">{featureName} is not available on your plan</h2>
 				<p className="text-sm text-muted-foreground max-w-md">
-					Upgrade your subscription to unlock {featureName.toLowerCase()} and other premium features.
+					This feature is currently disabled while Quickdash is being focused around core commerce workflows.
 				</p>
 			</div>
-			<Button asChild>
-				<Link href="/billing">Upgrade Plan</Link>
-			</Button>
+			<Button disabled>Unavailable</Button>
 		</div>
 	)
 }

@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Add01Icon, Logout02Icon, DiscoverCircleIcon, Settings01Icon } from "@hugeicons/core-free-icons"
+import { Add01Icon, Logout02Icon, Settings01Icon } from "@hugeicons/core-free-icons"
 import { Store, Users, Building2, Sparkles, Loader2 } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -147,31 +147,6 @@ function WorkspaceIcon({
 				)}
 			</ContextMenuContent>
 		</ContextMenu>
-	)
-}
-
-function NavButton({ icon, label, onClick }: { icon: typeof DiscoverCircleIcon; label: string; onClick: () => void }) {
-	return (
-		<Tooltip delayDuration={0}>
-			<TooltipTrigger asChild>
-				<button
-					type="button"
-					onClick={onClick}
-					className="relative group flex items-center justify-center w-full"
-				>
-					<div className="relative overflow-visible">
-						<Avatar className="size-10 rounded-lg transition-all duration-200">
-							<AvatarFallback className="rounded-lg bg-muted text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-200">
-								<HugeiconsIcon icon={icon} size={18} />
-							</AvatarFallback>
-						</Avatar>
-					</div>
-				</button>
-			</TooltipTrigger>
-			<TooltipContent side="right" sideOffset={8}>
-				<p className="font-medium">{label}</p>
-			</TooltipContent>
-		</Tooltip>
 	)
 }
 
@@ -405,11 +380,6 @@ export function WorkspaceSidebar({ workspaces, activeWorkspaceId }: WorkspaceSid
 
 				{/* Navigation at bottom */}
 				<div className="flex flex-col items-center gap-2 w-full">
-					<NavButton
-						icon={DiscoverCircleIcon}
-						label="Discover"
-						onClick={() => router.push("/discover")}
-					/>
 					<AddWorkspaceButton onClick={() => setCreateDialogOpen(true)} />
 				</div>
 			</aside>

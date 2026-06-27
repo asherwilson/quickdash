@@ -21,7 +21,7 @@ const workspaceTypes = [
 	{ id: "other", label: "Other", icon: Sparkles, description: "Something else" },
 ]
 
-export function WorkspaceStep({ userName, hasExistingWorkspace }: WorkspaceStepProps) {
+export function WorkspaceStep({ userName: _userName, hasExistingWorkspace }: WorkspaceStepProps) {
 	const [isPending, startTransition] = useTransition()
 	const [workspaceName, setWorkspaceName] = useState("")
 	const [workspaceType, setWorkspaceType] = useState("ecommerce")
@@ -73,7 +73,7 @@ export function WorkspaceStep({ userName, hasExistingWorkspace }: WorkspaceStepP
 			<header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm border-b">
 				<div className="relative flex items-center justify-between h-14 px-4 max-w-2xl mx-auto">
 					<Button variant="ghost" size="sm" className="-ml-2 text-muted-foreground" asChild>
-						<Link href="/onboarding/discover">
+						<Link href="/onboarding">
 							<ArrowLeft className="size-4 mr-2" />
 							<span className="hidden sm:inline">Back</span>
 						</Link>

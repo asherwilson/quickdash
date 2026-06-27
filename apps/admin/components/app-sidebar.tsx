@@ -110,7 +110,6 @@ import {
 
 import Link from "next/link"
 import { NavMain } from "@/components/nav-main"
-import { NavRecent } from "@/components/nav-recent"
 import { NavUser } from "@/components/nav-user"
 import { StorageIndicator } from "@/components/storage-indicator"
 import { useCommandMenu } from "@/components/command-menu"
@@ -331,19 +330,6 @@ const data = {
         { title: "Webhook Events", url: "/developers/webhooks" },
         { title: "Notes & Bugs", url: "/developers/notes" },
         { title: "Changelog", url: "/developers/changelog" },
-      ],
-    },
-  ],
-  navBilling: [
-    {
-      title: "Billing",
-      url: "/billing",
-      icon: CreditCardIcon,
-      items: [
-        { title: "Overview", url: "/billing" },
-        { title: "Invoices", url: "/billing/invoices" },
-        { title: "Payment Methods", url: "/billing/payment-methods" },
-        { title: "Usage", url: "/billing/usage" },
       ],
     },
   ],
@@ -872,12 +858,10 @@ function NormalSidebarContent({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroup>
-      <NavRecent />
       <NavMain label="Overview" labelIcon={Home01Icon} items={navOverview} />
       <NavMain label="Store" labelIcon={Building03Icon} items={navStore} />
       <NavMain label="Operations" labelIcon={Layers01Icon} items={navOperations} />
       <NavMain label="Growth" labelIcon={RocketIcon} items={navGrowth} />
-      <NavMain label="Billing" labelIcon={Invoice02Icon} items={data.navBilling} />
       <NavMain label="System" labelIcon={Settings02Icon} items={navSystem} />
       <NavMain label="Developers" labelIcon={SourceCodeIcon} items={navDevelopers} />
     </>

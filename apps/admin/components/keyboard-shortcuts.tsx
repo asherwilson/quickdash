@@ -9,7 +9,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog"
-import { useRightSidebar } from "@/components/ui/right-sidebar"
 import { useCommandMenu } from "@/components/command-menu"
 import {
 	getKeybindings,
@@ -57,19 +56,16 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
 	const [isHelpOpen, setIsHelpOpen] = React.useState(false)
 	const router = useRouter()
 	const { setTheme } = useTheme()
-	const { toggleSidebar } = useRightSidebar()
 	const { open: openCommandMenu } = useCommandMenu()
 
 	// Use refs to avoid stale closures
 	const routerRef = React.useRef(router)
 	const setThemeRef = React.useRef(setTheme)
-	const toggleSidebarRef = React.useRef(toggleSidebar)
 	const openCommandMenuRef = React.useRef(openCommandMenu)
 
 	React.useEffect(() => {
 		routerRef.current = router
 		setThemeRef.current = setTheme
-		toggleSidebarRef.current = toggleSidebar
 		openCommandMenuRef.current = openCommandMenu
 	})
 
@@ -85,7 +81,6 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
 			"go-customers": () => routerRef.current.push("/customers"),
 			"go-analytics": () => routerRef.current.push("/analytics"),
 			"go-settings": () => routerRef.current.push("/settings"),
-			"go-messages": () => routerRef.current.push("/messages"),
 			"go-back": () => routerRef.current.back(),
 			"go-forward": () => routerRef.current.forward(),
 			"go-inventory": () => routerRef.current.push("/inventory"),
@@ -94,7 +89,6 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
 			"search": () => openCommandMenuRef.current(),
 			"new-product": () => routerRef.current.push("/products?new=true"),
 			"new-order": () => routerRef.current.push("/orders?new=true"),
-			"toggle-sidebar": () => toggleSidebarRef.current(),
 			"toggle-theme": () => {
 				const html = document.documentElement
 				const current = html.classList.contains("dark") ? "dark" : "light"

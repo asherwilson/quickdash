@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react"
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { motion, AnimatePresence } from "framer-motion"
@@ -19,8 +18,6 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-
-const PREVIOUS_PATH_KEY = "quickdash_messages_previous_path"
 
 export function NavMain({
   label,
@@ -45,13 +42,8 @@ export function NavMain({
   const { openItems, toggle } = useSidebarState()
   const { isMobile, setOpenMobile, state } = useSidebar()
   const isCollapsed = state === "collapsed"
-  const pathname = usePathname()
 
-  // Save current path before navigating to messages
-  const handleLinkClick = (url: string) => {
-    if (url === "/messages" && pathname !== "/messages") {
-      sessionStorage.setItem(PREVIOUS_PATH_KEY, pathname)
-    }
+  const handleLinkClick = () => {
     if (isMobile) setOpenMobile(false)
   }
 
@@ -78,7 +70,7 @@ export function NavMain({
                 <>
                   {isCollapsed ? (
                     <SidebarMenuButton asChild tooltip={item.title}>
-                      <Link href={item.url || item.items![0].url} onClick={() => handleLinkClick(item.url || item.items![0].url)}>
+                      <Link href={item.url || item.items?.[0]?.url || "#"} onClick={handleLinkClick}>
                         <HugeiconsIcon icon={item.icon} size={16} />
                         <span>{item.title}</span>
                       </Link>
@@ -116,7 +108,7 @@ export function NavMain({
                               <SidebarMenuSubButton asChild>
                                 <Link
                                   href={subItem.url}
-                                  onClick={() => handleLinkClick(subItem.url)}
+                                  onClick={handleLinkClick}
                                 >
                                   <span>{subItem.title}</span>
                                 </Link>
@@ -130,7 +122,7 @@ export function NavMain({
                 </>
               ) : (
                 <SidebarMenuButton asChild tooltip={item.title}>
-                  <Link href={item.url} onClick={() => handleLinkClick(item.url)}>
+                  <Link href={item.url} onClick={handleLinkClick}>
                     <HugeiconsIcon icon={item.icon} size={16} />
                     <span>{item.title}</span>
                   </Link>

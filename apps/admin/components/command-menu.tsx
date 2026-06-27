@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useRouter, usePathname } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import {
   CommandDialog,
@@ -12,7 +12,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command"
-import { globalSearch, searchFriends, type SearchResult } from "@/app/(dashboard)/search-actions"
+import { globalSearch, type SearchResult } from "@/app/(dashboard)/search-actions"
 
 const pages = [
   { title: "Dashboard", url: "/" },
@@ -56,10 +56,7 @@ const pages = [
   { title: "Pages", url: "/content/pages" },
   { title: "Media Library", url: "/content/media" },
   { title: "Auctions", url: "/auctions" },
-  { title: "Messages", url: "/messages" },
   { title: "Discover People", url: "/discover" },
-  { title: "Notifications", url: "/notifications" },
-  { title: "Notification Alerts", url: "/notifications/alerts" },
   { title: "Activity Log", url: "/activity-log" },
   { title: "Automation", url: "/automation" },
   { title: "Automation Triggers", url: "/automation/triggers" },
@@ -69,14 +66,12 @@ const pages = [
   { title: "Sales Companies", url: "/sales/companies" },
   { title: "Sales Deals", url: "/sales/deals" },
   { title: "Sales Tasks", url: "/sales/tasks" },
-  { title: "Sales Calls", url: "/sales/calls" },
   { title: "Billing", url: "/billing" },
   { title: "Developer Notes", url: "/developers/notes" },
   { title: "API Keys", url: "/developers/api-keys" },
   { title: "Webhooks", url: "/developers/webhooks" },
   { title: "Settings", url: "/settings" },
   { title: "Account", url: "/settings/account" },
-  { title: "Notification Preferences", url: "/settings/notifications" },
   { title: "Team & Permissions", url: "/settings/team" },
   { title: "Payments", url: "/settings/payments" },
   { title: "Tax", url: "/settings/tax" },
@@ -95,14 +90,10 @@ export function CommandMenu() {
     orders: SearchResult[]
     customers: SearchResult[]
   }>({ products: [], orders: [], customers: [] })
-  const [friends, setFriends] = React.useState<SearchResult[]>([])
   const [searching, setSearching] = React.useState(false)
   const router = useRouter()
-  const pathname = usePathname()
   const { setTheme } = useTheme()
   const debounceRef = React.useRef<ReturnType<typeof setTimeout>>(null)
-
-  const isMessagesPage = pathname?.startsWith("/messages")
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -125,7 +116,6 @@ export function CommandMenu() {
     if (!open) {
       setQuery("")
       setResults({ products: [], orders: [], customers: [] })
-      setFriends([])
     }
   }, [open])
 
@@ -135,19 +125,14 @@ export function CommandMenu() {
 
     if (!query || query.length < 2) {
       setResults({ products: [], orders: [], customers: [] })
-      setFriends([])
       return
     }
 
     setSearching(true)
     debounceRef.current = setTimeout(async () => {
       try {
-        const [searchResults, friendResults] = await Promise.all([
-          globalSearch(query),
-          isMessagesPage ? searchFriends(query) : Promise.resolve([]),
-        ])
+        const searchResults = await globalSearch(query)
         setResults(searchResults)
-        setFriends(friendResults)
       } catch {
         // Ignore search errors
       } finally {
@@ -158,7 +143,7 @@ export function CommandMenu() {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
     }
-  }, [query, isMessagesPage])
+  }, [query])
 
   const runCommand = React.useCallback((command: () => void) => {
     setOpen(false)
@@ -168,7 +153,7 @@ export function CommandMenu() {
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
       <CommandInput
-        placeholder={isMessagesPage ? "Search messages, friends, pages..." : "Search products, orders, customers, pages..."}
+        placeholder="Search products, orders, customers, pages..."
         value={query}
         onValueChange={setQuery}
       />
@@ -176,27 +161,6 @@ export function CommandMenu() {
         <CommandEmpty>
           {searching ? "Searching..." : "No results found."}
         </CommandEmpty>
-
-        {/* Friends - contextual to messages page */}
-        {friends.length > 0 && (
-          <>
-            <CommandGroup heading="Friends">
-              {friends.map((item) => (
-                <CommandItem
-                  key={item.id}
-                  value={`friend-${item.title}-${item.subtitle || ""}`}
-                  onSelect={() => runCommand(() => router.push(item.url))}
-                >
-                  <span>{item.title}</span>
-                  {item.subtitle && (
-                    <span className="ml-2 text-xs text-muted-foreground">{item.subtitle}</span>
-                  )}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-            <CommandSeparator />
-          </>
-        )}
 
         {/* Products */}
         {results.products.length > 0 && (

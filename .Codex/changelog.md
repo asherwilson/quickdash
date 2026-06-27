@@ -65,16 +65,35 @@
 - Added `Cache-Control: no-store, max-age=0` to authenticated Storefront API responses so storefront publish testing cannot receive stale API payloads.
 - Audited the dashboard route map, API route map, navigation model, and database schema against the desired ecommerce-only Quickdash direction.
 - Tightened Storefront API CORS handling so registered storefront domains tolerate protocol and `www`/non-`www` differences instead of failing deployed browser requests on exact-domain mismatches.
+- Removed the first layer of communication bloat from the admin shell: global calls provider/overlays, message sound listener, notification provider, right sidebar panel, header notification/call/friend controls, workspace-bar Messages/Calls buttons, notification nav, sales calls nav, command-palette entries, and related shortcuts.
+- Soft-disabled legacy messaging/calling/notification entry pages by redirecting them back to the dashboard or settings instead of loading the retired UI.
 
 ### Files Changed
 - `apps/admin/app/api/storefront/categories/route.ts`
 - `apps/admin/lib/storefront-auth.ts`
+- `apps/admin/app/(dashboard)/layout.tsx`
+- `apps/admin/app/(dashboard)/messages/page.tsx`
+- `apps/admin/app/(dashboard)/calls/page.tsx`
+- `apps/admin/app/(dashboard)/notifications/page.tsx`
+- `apps/admin/app/(dashboard)/notifications/messages/page.tsx`
+- `apps/admin/app/(dashboard)/notifications/alerts/page.tsx`
+- `apps/admin/app/(dashboard)/settings/notifications/page.tsx`
+- `apps/admin/app/(dashboard)/sales/calls/page.tsx`
+- `apps/admin/components/app-sidebar.tsx`
+- `apps/admin/components/command-menu.tsx`
+- `apps/admin/components/header-toolbar.tsx`
+- `apps/admin/components/keyboard-shortcuts.tsx`
+- `apps/admin/components/nav-main.tsx`
+- `apps/admin/components/workspace-sidebar.tsx`
+- `apps/admin/lib/keybindings.ts`
 - `.Codex/changelog.md`
 
 ### Findings
 - Quickdash currently mixes ecommerce backend, generic CMS/BaaS, CRM, messaging/calling, workflow automation, billing/subscription SaaS, and developer platform concepts.
 - The live Storefront API returns category/product data correctly after the category-count fix, so an empty deployed Gemsutopia categories page points to a frontend browser fetch issue such as CORS, missing production env, or a client-side runtime error.
 - Storefront CORS was previously pinned to `https://${storefront.domain}`, which can block legitimate storefronts when the saved domain includes a protocol or the deployed site uses the opposite `www` form.
+- Messaging, calling, notifications, and the right sidebar were deeply mounted in the global dashboard shell, so removing visible entry points alone was not enough; the first cleanup pass also needed to remove always-on providers/listeners.
+- The first pass intentionally leaves deeper route folders, actions, schemas, and dependencies in place for a later deletion pass so ecommerce/product/order flows remain low-risk.
 - The ecommerce core is present and worth preserving: dashboard, analytics, orders, products, categories, variants, reviews, auctions, customers, inventory, subscriptions, shipping, suppliers, storefront API, storefront settings, payment settings, tax, team/settings, and API keys/webhooks.
 - The strongest removal candidates are automation/workflows, marketing campaigns/email/referrals/SEO, CRM/sales/calls/scheduling, notifications/messages/activity-log duplication, billing/pricing/Polar subscription gating, music/social/server/presence features, and generic content/blog/pages if Quickdash is being narrowed to ecommerce store operations.
 - Product and category slugs are still globally unique instead of workspace/store-scoped.
@@ -83,10 +102,11 @@
 ### Verification
 - `biome lint apps/admin/app/api/storefront/categories/route.ts apps/admin/lib/storefront-auth.ts` passed using the local binary.
 - `biome lint apps/admin/lib/storefront-auth.ts` passed using the local binary.
+- Focused Biome lint passed for the changed dashboard shell/navigation/redirect files.
 - `tsc --noEmit -p apps/admin/tsconfig.json` passed using the app-local TypeScript binary.
 - `pnpm exec` commands are currently blocked by pnpm attempting an interactive modules purge; direct local binaries work.
 
 ### What's Next
 - Push/deploy the category-count/no-store fix, then re-check `https://app.quickdash.net/api/storefront/categories?count=true` with the Gemsutopia key.
 - Patch Gemsutopia `ProductContent` to use Quickdash product images instead of `placeholderMedia`.
-- Decide whether the first cleanup pass should hide non-ecommerce navigation only, or physically remove routes/schema/dependencies in phases.
+- Continue the cleanup in phases: next remove or redirect remaining CRM/marketing/automation/billing surfaces, then delete dead message/call/notification components/actions/schema/dependencies after confirming no ecommerce flows depend on them.

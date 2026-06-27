@@ -56,13 +56,6 @@ export const DEFAULT_KEYBINDINGS: KeyBinding[] = [
 		category: "navigation",
 	},
 	{
-		id: "go-messages",
-		name: "Go to Messages",
-		description: "Navigate to messages",
-		keys: ["meta", "shift", "m"],
-		category: "navigation",
-	},
-	{
 		id: "go-back",
 		name: "Go Back",
 		description: "Navigate to previous page",
@@ -123,14 +116,6 @@ export const DEFAULT_KEYBINDINGS: KeyBinding[] = [
 	},
 
 	// View
-	{
-		id: "toggle-sidebar",
-		name: "Toggle Right Sidebar",
-		description: "Show or hide the right sidebar",
-		keys: ["meta", "shift", "b"],
-		category: "view",
-		global: true,
-	},
 	{
 		id: "toggle-theme",
 		name: "Toggle Theme",

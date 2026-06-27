@@ -12,7 +12,6 @@ import {
   DeliveryTruck01Icon,
   Megaphone01Icon,
   News01Icon,
-  Notification01Icon,
   Package01Icon,
   RepeatIcon,
   Search01Icon,
@@ -24,10 +23,7 @@ import {
   UserIcon,
   Building03Icon,
   SaleTag01Icon,
-  ChartLineData01Icon,
   CheckListIcon,
-  Call02Icon,
-  ArrowLeft01Icon,
   ArrowRight01Icon,
   WorkflowSquare10Icon,
   Coins01Icon,
@@ -57,7 +53,6 @@ import {
   PackageAddIcon,
   Alert01Icon,
   PackageRemoveIcon,
-  RecordIcon,
   CheckmarkCircle02Icon,
   RefreshIcon,
   CancelCircleIcon,
@@ -122,13 +117,11 @@ import { StorageIndicator } from "@/components/storage-indicator"
 import { useCommandMenu } from "@/components/command-menu"
 import { useSidebarStateProvider, SidebarStateContext } from "@/lib/use-sidebar-state"
 import { useSidebarMode } from "@/lib/sidebar-mode"
-import { ChatSidebar, useChat } from "@/components/messages"
 import { useWorkflowStore } from "@/lib/workflow-context"
 import { TRIGGER_CATEGORIES, ACTION_CATEGORIES } from "@/app/(dashboard)/automation/constants"
 import type { WorkflowTrigger, WorkflowAction } from "@quickdash/db/schema"
 import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { ServersSidebar } from "@/components/servers-sidebar"
 import { WorkspaceSidebar } from "@/components/workspace-sidebar"
 import type { WorkspaceWithRole } from "@/lib/workspace"
 import type { WorkspaceFeatures } from "@quickdash/db/schema"
@@ -248,11 +241,6 @@ const data = {
       icon: CheckListIcon,
     },
     {
-      title: "Calls",
-      url: "/sales/calls",
-      icon: Call02Icon,
-    },
-    {
       title: "Scheduling",
       url: "/scheduling",
       icon: Calendar01Icon,
@@ -339,16 +327,6 @@ const data = {
     },
   ],
   navSystem: [
-    {
-      title: "Notifications",
-      url: "/notifications",
-      icon: Notification01Icon,
-      items: [
-        { title: "Messages", url: "/notifications/messages" },
-        { title: "Alerts", url: "/notifications/alerts" },
-        { title: "Preferences", url: "/settings/notifications" },
-      ],
-    },
     {
       title: "Activity Log",
       url: "/activity-log",
@@ -464,14 +442,6 @@ function DigitalClock() {
   )
 }
 
-function MessagesHeader() {
-  return (
-    <div className="flex items-center justify-center py-2">
-      <DigitalClock />
-    </div>
-  )
-}
-
 function NormalHeader({ openCommandMenu, workspace }: { openCommandMenu: () => void; workspace: WorkspaceData | null }) {
   return (
     <>
@@ -500,32 +470,6 @@ function NormalHeader({ openCommandMenu, workspace }: { openCommandMenu: () => v
         <span className="flex-1 text-left">Search...</span>
       </button>
     </>
-  )
-}
-
-function MessagesSidebarContent() {
-  const chat = useChat()
-
-  // Show loading state if chat data is not yet initialized
-  if (!chat.isInitialized) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full py-8 text-muted-foreground">
-        <span className="text-sm">Loading...</span>
-      </div>
-    )
-  }
-
-  return (
-    <ChatSidebar
-      active={chat.active}
-      onSelect={chat.setActive}
-      teamMembers={chat.teamMembers}
-      friends={chat.friends}
-      inboxEmails={chat.inboxEmails}
-      userId={chat.userId}
-      messages={chat.messages}
-      viewMode={chat.viewMode}
-    />
   )
 }
 
@@ -999,7 +943,6 @@ export function AppSidebar({
   const { open: openCommandMenu } = useCommandMenu()
   const sidebarState = useSidebarStateProvider()
   const { mode } = useSidebarMode()
-  const isMessagesMode = mode === "messages"
   const isWorkflowMode = mode === "workflow"
   const isMobile = useIsMobile()
 
@@ -1008,8 +951,11 @@ export function AppSidebar({
   const collapsible = isMobile ? "icon" : "none"
 
   // Helper: lock a sub-item if feature is disabled
-  const lockSub = (sub: { title: string; url: string }, feature: keyof WorkspaceFeatures) =>
-    features && !features[feature] ? { ...sub, locked: true } : sub
+  const lockSub = React.useCallback(
+    (sub: { title: string; url: string }, feature: keyof WorkspaceFeatures) =>
+      features && !features[feature] ? { ...sub, locked: true } : sub,
+    [features]
+  )
 
   // Build dynamic Content nav items from collections
   const navGrowth = React.useMemo(() => {
@@ -1043,7 +989,7 @@ export function AppSidebar({
       }
       return item
     })
-  }, [collections, features])
+  }, [collections, lockSub])
 
   // Gate Store section items + sub-items
   const navStore = React.useMemo(() => {
@@ -1067,7 +1013,7 @@ export function AppSidebar({
       }
       return item
     })
-  }, [features])
+  }, [features, lockSub])
 
   // Gate System section sub-items
   const navSystem = React.useMemo(() => {
@@ -1089,7 +1035,7 @@ export function AppSidebar({
       }
       return item
     })
-  }, [workspace?.role, features])
+  }, [workspace?.role, lockSub])
 
   // Gate Overview section (Analytics)
   const navOverview = React.useMemo(() => {
@@ -1125,7 +1071,7 @@ export function AppSidebar({
       }
       return item
     })
-  }, [features])
+  }, [features, lockSub])
 
   // Gate CRM section — lock entire section if crm disabled
   const navCRM = React.useMemo(() => {
@@ -1157,7 +1103,7 @@ export function AppSidebar({
       }
       return item
     })
-  }, [features])
+  }, [features, lockSub])
 
   // On mobile, we render the workspace/servers bar inside the sidebar sheet
   // so they slide out together as one unit
@@ -1169,31 +1115,23 @@ export function AppSidebar({
         {/* Mobile: workspace/servers bar + main sidebar side by side */}
         {showMobileSidebarWithBar ? (
           <div className="flex h-full">
-            {isMessagesMode ? (
-              <ServersSidebar />
-            ) : (
-              <WorkspaceSidebar
-                workspaces={workspaces}
-                activeWorkspaceId={activeWorkspaceId}
-              />
-            )}
+            <WorkspaceSidebar
+              workspaces={workspaces}
+              activeWorkspaceId={activeWorkspaceId}
+            />
             <div className="flex flex-col flex-1 min-w-0">
               <SidebarHeader>
-                {isMessagesMode ? (
-                  <MessagesHeader />
-                ) : isWorkflowMode ? (
+                {isWorkflowMode ? (
                   <WorkflowHeader />
                 ) : (
                   <NormalHeader openCommandMenu={openCommandMenu} workspace={workspace} />
                 )}
               </SidebarHeader>
               <SidebarContent
-                onScrollPosition={isMessagesMode || isWorkflowMode ? undefined : sidebarState.setScrollPosition}
-                initialScrollTop={isMessagesMode || isWorkflowMode ? 0 : sidebarState.scrollPosition}
+                onScrollPosition={isWorkflowMode ? undefined : sidebarState.setScrollPosition}
+                initialScrollTop={isWorkflowMode ? 0 : sidebarState.scrollPosition}
               >
-                {isMessagesMode ? (
-                  <MessagesSidebarContent />
-                ) : isWorkflowMode ? (
+                {isWorkflowMode ? (
                   <WorkflowSidebarContent />
                 ) : (
                   <NormalSidebarContent navSystem={navSystem} navGrowth={navGrowth} navOverview={navOverview} navOperations={navOperations} navStore={navStore} navCRM={navCRM} navDevelopers={navDevelopers} sidebarState={sidebarState} />
@@ -1208,21 +1146,17 @@ export function AppSidebar({
         ) : (
           <>
             <SidebarHeader>
-              {isMessagesMode ? (
-                <MessagesHeader />
-              ) : isWorkflowMode ? (
+              {isWorkflowMode ? (
                 <WorkflowHeader />
               ) : (
                 <NormalHeader openCommandMenu={openCommandMenu} workspace={workspace} />
               )}
             </SidebarHeader>
             <SidebarContent
-              onScrollPosition={isMessagesMode || isWorkflowMode ? undefined : sidebarState.setScrollPosition}
-              initialScrollTop={isMessagesMode || isWorkflowMode ? 0 : sidebarState.scrollPosition}
+              onScrollPosition={isWorkflowMode ? undefined : sidebarState.setScrollPosition}
+              initialScrollTop={isWorkflowMode ? 0 : sidebarState.scrollPosition}
             >
-              {isMessagesMode ? (
-                <MessagesSidebarContent />
-              ) : isWorkflowMode ? (
+              {isWorkflowMode ? (
                 <WorkflowSidebarContent />
               ) : (
                 <NormalSidebarContent navSystem={navSystem} navGrowth={navGrowth} navOverview={navOverview} navOperations={navOperations} navStore={navStore} navCRM={navCRM} navDevelopers={navDevelopers} sidebarState={sidebarState} />

@@ -64,6 +64,7 @@
 - Reworked the storefront categories endpoint to compute active product counts with an explicit grouped product query instead of a raw correlated count subquery.
 - Added `Cache-Control: no-store, max-age=0` to authenticated Storefront API responses so storefront publish testing cannot receive stale API payloads.
 - Audited the dashboard route map, API route map, navigation model, and database schema against the desired ecommerce-only Quickdash direction.
+- Tightened Storefront API CORS handling so registered storefront domains tolerate protocol and `www`/non-`www` differences instead of failing deployed browser requests on exact-domain mismatches.
 
 ### Files Changed
 - `apps/admin/app/api/storefront/categories/route.ts`
@@ -72,6 +73,8 @@
 
 ### Findings
 - Quickdash currently mixes ecommerce backend, generic CMS/BaaS, CRM, messaging/calling, workflow automation, billing/subscription SaaS, and developer platform concepts.
+- The live Storefront API returns category/product data correctly after the category-count fix, so an empty deployed Gemsutopia categories page points to a frontend browser fetch issue such as CORS, missing production env, or a client-side runtime error.
+- Storefront CORS was previously pinned to `https://${storefront.domain}`, which can block legitimate storefronts when the saved domain includes a protocol or the deployed site uses the opposite `www` form.
 - The ecommerce core is present and worth preserving: dashboard, analytics, orders, products, categories, variants, reviews, auctions, customers, inventory, subscriptions, shipping, suppliers, storefront API, storefront settings, payment settings, tax, team/settings, and API keys/webhooks.
 - The strongest removal candidates are automation/workflows, marketing campaigns/email/referrals/SEO, CRM/sales/calls/scheduling, notifications/messages/activity-log duplication, billing/pricing/Polar subscription gating, music/social/server/presence features, and generic content/blog/pages if Quickdash is being narrowed to ecommerce store operations.
 - Product and category slugs are still globally unique instead of workspace/store-scoped.
@@ -79,6 +82,7 @@
 
 ### Verification
 - `biome lint apps/admin/app/api/storefront/categories/route.ts apps/admin/lib/storefront-auth.ts` passed using the local binary.
+- `biome lint apps/admin/lib/storefront-auth.ts` passed using the local binary.
 - `tsc --noEmit -p apps/admin/tsconfig.json` passed using the app-local TypeScript binary.
 - `pnpm exec` commands are currently blocked by pnpm attempting an interactive modules purge; direct local binaries work.
 

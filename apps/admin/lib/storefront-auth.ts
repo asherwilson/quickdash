@@ -119,6 +119,50 @@ function buildCorsHeaders(origin?: string | null): Record<string, string> {
 // Default CORS headers (used for error responses before storefront is resolved)
 const defaultCorsHeaders = buildCorsHeaders()
 
+function normalizeStorefrontHost(domain?: string | null): string | null {
+	if (!domain) {
+		return null
+	}
+
+	try {
+		return new URL(domain.includes("://") ? domain : `https://${domain}`).hostname
+	} catch {
+		return domain.replace(/^https?:\/\//, "").split("/")[0] || null
+	}
+}
+
+function originForHost(host: string): string {
+	return `https://${host}`
+}
+
+function allowedCorsOrigin(requestOrigin: string | null, storefrontDomain: string | null) {
+	const storefrontHost = normalizeStorefrontHost(storefrontDomain)
+
+	if (!requestOrigin) {
+		return storefrontHost ? originForHost(storefrontHost) : null
+	}
+
+	const requestUrl = new URL(requestOrigin)
+	const requestHost = requestUrl.hostname
+
+	if (requestHost === "localhost" || requestHost === "127.0.0.1") {
+		return requestOrigin
+	}
+
+	if (!storefrontHost) {
+		return requestOrigin
+	}
+
+	const hostWithoutWww = storefrontHost.replace(/^www\./, "")
+	const requestWithoutWww = requestHost.replace(/^www\./, "")
+
+	if (requestWithoutWww === hostWithoutWww) {
+		return requestOrigin
+	}
+
+	return originForHost(storefrontHost)
+}
+
 /**
  * Helper to create error responses with CORS
  */
@@ -216,13 +260,10 @@ export function withStorefrontAuth(
 			}
 		}
 
-		// Scope CORS to the storefront's registered domain.
-		// In dev, also allow localhost origins so the storefront can be tested locally.
+		// Scope CORS to the registered storefront domain, while tolerating protocol
+		// and www/non-www differences that commonly happen after deployment.
 		const requestOrigin = request.headers.get("origin")
-		const isLocalhost = requestOrigin?.match(/^https?:\/\/localhost(:\d+)?$/)
-		const allowedOrigin = authResult.storefront.domain && !isLocalhost
-			? `https://${authResult.storefront.domain}`
-			: requestOrigin
+		const allowedOrigin = allowedCorsOrigin(requestOrigin, authResult.storefront.domain)
 
 		const response = await handler(request, authResult.storefront)
 		return addCorsHeaders(response, allowedOrigin)

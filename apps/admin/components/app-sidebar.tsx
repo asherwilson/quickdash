@@ -4,7 +4,6 @@ import * as React from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   AnalyticsUpIcon,
-  UnfoldMoreIcon,
   DashboardSpeed01Icon,
   DeliveryBox01Icon,
   DeliveryTracking01Icon,
@@ -738,26 +737,14 @@ function WorkflowSidebarContent() {
 function NormalSidebarContent({
   navOverview,
   navOperations,
-  navStore,
-  sidebarState
+  navStore
 }: {
   navOverview: typeof data.navOverview
   navOperations: typeof data.navOperations
   navStore: typeof data.navStore
-  sidebarState: ReturnType<typeof useSidebarStateProvider>
 }) {
   return (
     <>
-      <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton onClick={sidebarState.collapseAll}>
-              <span className="text-xs font-medium text-sidebar-foreground/70">Collapse All</span>
-              <HugeiconsIcon icon={UnfoldMoreIcon} size={16} className="ml-auto" />
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarGroup>
       <NavMain label="Overview" labelIcon={Home01Icon} items={navOverview} />
       <NavMain label="Store" labelIcon={Building03Icon} items={navStore} />
       <NavMain label="Operations" labelIcon={Layers01Icon} items={navOperations} />
@@ -915,7 +902,7 @@ export function AppSidebar({
                 {isWorkflowMode ? (
                   <WorkflowSidebarContent />
                 ) : (
-                  <NormalSidebarContent navOverview={navOverview} navOperations={navOperations} navStore={navStore} sidebarState={sidebarState} />
+                  <NormalSidebarContent navOverview={navOverview} navOperations={navOperations} navStore={navStore} />
                 )}
               </SidebarContent>
               <SidebarFooter>
@@ -926,13 +913,11 @@ export function AppSidebar({
           </div>
         ) : (
           <>
-            <SidebarHeader>
-              {isWorkflowMode ? (
+            {isWorkflowMode && (
+              <SidebarHeader>
                 <WorkflowHeader />
-              ) : (
-                <NormalHeader openCommandMenu={openCommandMenu} />
-              )}
-            </SidebarHeader>
+              </SidebarHeader>
+            )}
             <SidebarContent
               onScrollPosition={isWorkflowMode ? undefined : sidebarState.setScrollPosition}
               initialScrollTop={isWorkflowMode ? 0 : sidebarState.scrollPosition}
@@ -940,7 +925,7 @@ export function AppSidebar({
               {isWorkflowMode ? (
                 <WorkflowSidebarContent />
               ) : (
-                <NormalSidebarContent navOverview={navOverview} navOperations={navOperations} navStore={navStore} sidebarState={sidebarState} />
+                <NormalSidebarContent navOverview={navOverview} navOperations={navOperations} navStore={navStore} />
               )}
             </SidebarContent>
             <SidebarFooter>

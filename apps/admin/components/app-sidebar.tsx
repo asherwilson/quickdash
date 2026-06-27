@@ -24,7 +24,6 @@ import {
   SaleTag01Icon,
   CheckListIcon,
   ArrowRight01Icon,
-  WorkflowSquare10Icon,
   Coins01Icon,
   Key02Icon,
   Add01Icon,
@@ -257,16 +256,6 @@ const data = {
         { title: "Purchase Orders", url: "/suppliers/purchase-orders" },
       ],
     },
-    {
-      title: "Automation",
-      url: "/automation",
-      icon: WorkflowSquare10Icon,
-      items: [
-        { title: "Workflows", url: "/automation" },
-        { title: "Triggers", url: "/automation/triggers" },
-        { title: "History", url: "/automation/history" },
-      ],
-    },
   ],
   navGrowth: [
     {
@@ -306,7 +295,6 @@ const data = {
       icon: Settings02Icon,
       items: [
         { title: "All Settings", url: "/settings" },
-        { title: "Permissions", url: "/settings/team" },
         { title: "Sessions", url: "/settings/sessions" },
         { title: "Storefronts", url: "/settings/storefronts" },
         { title: "Payments", url: "/settings/payments" },
@@ -976,7 +964,6 @@ export function AppSidebar({
               if (workspace?.role !== "owner") return null
               return lockSub(sub, "integrations")
             }
-            if (sub.title === "Permissions") return lockSub(sub, "permissions")
             if (sub.title === "Sessions") return lockSub(sub, "sessions")
             if (sub.title === "Exports") return lockSub(sub, "exports")
             return sub
@@ -1000,9 +987,6 @@ export function AppSidebar({
   // Gate Operations section
   const navOperations = React.useMemo(() => {
     return data.navOperations.map((item) => {
-      if (item.title === "Automation" && features && !features.automation) {
-        return { ...item, locked: true }
-      }
       if (item.title === "Subscriptions" && features && !features.subscriptions) {
         return { ...item, locked: true }
       }

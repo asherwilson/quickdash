@@ -160,11 +160,6 @@ export default async function DashboardLayout({
                         avatar: user?.image || "",
                         role: user?.role || "member",
                       }}
-                      workspace={activeWorkspace ? {
-                        name: activeWorkspace.name,
-                        logo: workspaces.find(w => w.id === activeWorkspace.id)?.logo ?? null,
-                        role: activeWorkspace.role,
-                      } : null}
                       workspaces={workspaces}
                       activeWorkspaceId={activeWorkspace?.id ?? null}
                       collections={collections}

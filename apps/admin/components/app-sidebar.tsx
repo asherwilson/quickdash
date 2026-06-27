@@ -103,8 +103,6 @@ import {
   GiftIcon,
   AwardIcon,
 } from "@hugeicons/core-free-icons"
-
-import Link from "next/link"
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
 import { StorageIndicator } from "@/components/storage-indicator"
@@ -287,27 +285,6 @@ type UserData = {
   role: string
 }
 
-type WorkspaceData = {
-  name: string
-  logo: string | null
-  role: "owner" | "admin" | "member" | "viewer"
-}
-
-function getRoleLabel(role: WorkspaceData["role"]): string {
-  switch (role) {
-    case "owner":
-      return "Owner"
-    case "admin":
-      return "Admin"
-    case "member":
-      return "Member"
-    case "viewer":
-      return "Viewer"
-    default:
-      return "Member"
-  }
-}
-
 function DigitalClock() {
   const [time, setTime] = React.useState<Date | null>(null)
 
@@ -342,25 +319,9 @@ function DigitalClock() {
   )
 }
 
-function NormalHeader({ openCommandMenu, workspace }: { openCommandMenu: () => void; workspace: WorkspaceData | null }) {
+function NormalHeader({ openCommandMenu }: { openCommandMenu: () => void }) {
   return (
-    <>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton size="lg" asChild>
-            <Link href="/">
-              <div className="grid flex-1 text-left leading-tight">
-                <span className="truncate font-(family-name:--font-rubik-mono) text-base">
-                  {workspace?.name ?? "Workspace"}
-                </span>
-                <span className="truncate font-sans text-xs text-muted-foreground">
-                  {workspace ? getRoleLabel(workspace.role) : "Member"}
-                </span>
-              </div>
-            </Link>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
+    <div className="md:hidden">
       <button
         type="button"
         onClick={openCommandMenu}
@@ -369,7 +330,7 @@ function NormalHeader({ openCommandMenu, workspace }: { openCommandMenu: () => v
         <HugeiconsIcon icon={Search01Icon} size={14} />
         <span className="flex-1 text-left">Search...</span>
       </button>
-    </>
+    </div>
   )
 }
 
@@ -812,7 +773,6 @@ type CollectionNavItem = {
 
 export function AppSidebar({
   user,
-  workspace,
   workspaces = [],
   activeWorkspaceId = null,
   collections = [],
@@ -820,7 +780,6 @@ export function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   user: UserData
-  workspace: WorkspaceData | null
   workspaces?: WorkspaceWithRole[]
   activeWorkspaceId?: string | null
   collections?: CollectionNavItem[]
@@ -946,7 +905,7 @@ export function AppSidebar({
                 {isWorkflowMode ? (
                   <WorkflowHeader />
                 ) : (
-                  <NormalHeader openCommandMenu={openCommandMenu} workspace={workspace} />
+                  <NormalHeader openCommandMenu={openCommandMenu} />
                 )}
               </SidebarHeader>
               <SidebarContent
@@ -971,7 +930,7 @@ export function AppSidebar({
               {isWorkflowMode ? (
                 <WorkflowHeader />
               ) : (
-                <NormalHeader openCommandMenu={openCommandMenu} workspace={workspace} />
+                <NormalHeader openCommandMenu={openCommandMenu} />
               )}
             </SidebarHeader>
             <SidebarContent

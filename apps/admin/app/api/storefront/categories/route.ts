@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server"
 import { db } from "@quickdash/db/client"
-import { eq, and, isNull, sql } from "@quickdash/db/drizzle"
-import { categories } from "@quickdash/db/schema"
+import { eq, and, isNull, count, inArray } from "@quickdash/db/drizzle"
+import { categories, products } from "@quickdash/db/schema"
 import { withStorefrontAuth, handleCorsOptions, type StorefrontContext } from "@/lib/storefront-auth"
 
 async function handleGet(request: NextRequest, storefront: StorefrontContext) {
@@ -35,16 +35,32 @@ async function handleGet(request: NextRequest, storefront: StorefrontContext) {
 				parentId: categories.parentId,
 				sortOrder: categories.sortOrder,
 				isFeatured: categories.isFeatured,
-				productCount: sql<number>`(
-					SELECT COUNT(*) FROM products
-					WHERE products.category_id = ${categories.id}
-					AND products.workspace_id = ${storefront.workspaceId}
-					AND products.is_active = true
-				)`,
 			})
 			.from(categories)
 			.where(and(...conditions))
 			.orderBy(categories.sortOrder, categories.name)
+
+		const categoryIds = items.map((c) => c.id)
+		const counts = categoryIds.length > 0
+			? await db
+				.select({
+					categoryId: products.categoryId,
+					productCount: count(),
+				})
+				.from(products)
+				.where(and(
+					eq(products.workspaceId, storefront.workspaceId),
+					eq(products.isActive, true),
+					inArray(products.categoryId, categoryIds)
+				))
+				.groupBy(products.categoryId)
+			: []
+
+		const countByCategoryId = new Map(
+			counts
+				.filter((item) => item.categoryId)
+				.map((item) => [item.categoryId as string, Number(item.productCount)])
+		)
 
 		return Response.json({
 			categories: items.map((c) => ({
@@ -56,7 +72,7 @@ async function handleGet(request: NextRequest, storefront: StorefrontContext) {
 				parentId: c.parentId,
 				sortOrder: c.sortOrder,
 				isFeatured: c.isFeatured,
-				productCount: Number(c.productCount),
+				productCount: countByCategoryId.get(c.id) ?? 0,
 			})),
 		})
 	}

@@ -55,3 +55,34 @@
 - Replace `xlsx` or switch to the maintained SheetJS distribution source to clear the last audit advisories.
 - Add a database migration to make product/category slugs unique per workspace instead of globally unique.
 - Triage full lint separately: fix the web ESLint/AJV crash, then decide whether to mass-format admin or relax formatting checks.
+
+## Session - 2026-06-27
+
+### Completed
+- Re-scanned the Quickdash/Gemsutopia product and category publishing flow after Reese still saw broken storefront behavior.
+- Verified the live Storefront API now returns the active product under category `natural-rough1`, but `/categories?count=true` still reports `productCount: 0` for that category.
+- Reworked the storefront categories endpoint to compute active product counts with an explicit grouped product query instead of a raw correlated count subquery.
+- Added `Cache-Control: no-store, max-age=0` to authenticated Storefront API responses so storefront publish testing cannot receive stale API payloads.
+- Audited the dashboard route map, API route map, navigation model, and database schema against the desired ecommerce-only Quickdash direction.
+
+### Files Changed
+- `apps/admin/app/api/storefront/categories/route.ts`
+- `apps/admin/lib/storefront-auth.ts`
+- `.Codex/changelog.md`
+
+### Findings
+- Quickdash currently mixes ecommerce backend, generic CMS/BaaS, CRM, messaging/calling, workflow automation, billing/subscription SaaS, and developer platform concepts.
+- The ecommerce core is present and worth preserving: dashboard, analytics, orders, products, categories, variants, reviews, auctions, customers, inventory, subscriptions, shipping, suppliers, storefront API, storefront settings, payment settings, tax, team/settings, and API keys/webhooks.
+- The strongest removal candidates are automation/workflows, marketing campaigns/email/referrals/SEO, CRM/sales/calls/scheduling, notifications/messages/activity-log duplication, billing/pricing/Polar subscription gating, music/social/server/presence features, and generic content/blog/pages if Quickdash is being narrowed to ecommerce store operations.
+- Product and category slugs are still globally unique instead of workspace/store-scoped.
+- Gemsutopia product detail rendering still hardcodes placeholder media in `ProductContent`, so product images can appear unpublished even when Quickdash returns product images correctly.
+
+### Verification
+- `biome lint apps/admin/app/api/storefront/categories/route.ts apps/admin/lib/storefront-auth.ts` passed using the local binary.
+- `tsc --noEmit -p apps/admin/tsconfig.json` passed using the app-local TypeScript binary.
+- `pnpm exec` commands are currently blocked by pnpm attempting an interactive modules purge; direct local binaries work.
+
+### What's Next
+- Push/deploy the category-count/no-store fix, then re-check `https://app.quickdash.net/api/storefront/categories?count=true` with the Gemsutopia key.
+- Patch Gemsutopia `ProductContent` to use Quickdash product images instead of `placeholderMedia`.
+- Decide whether the first cleanup pass should hide non-ecommerce navigation only, or physically remove routes/schema/dependencies in phases.

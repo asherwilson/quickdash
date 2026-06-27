@@ -1,7 +1,7 @@
 import { db } from "@quickdash/db/client"
 import { eq, and, inArray } from "@quickdash/db/drizzle"
 import { storefronts, workspaces, users, storeSettings } from "@quickdash/db/schema"
-import { type NextRequest } from "next/server"
+import type { NextRequest } from "next/server"
 
 export type StorefrontContext = {
 	id: string
@@ -149,6 +149,7 @@ function addCorsHeaders(response: Response, origin?: string | null): Response {
 	Object.entries(headers).forEach(([key, value]) => {
 		newHeaders.set(key, value)
 	})
+	newHeaders.set("Cache-Control", "no-store, max-age=0")
 	return new Response(response.body, {
 		status: response.status,
 		statusText: response.statusText,

@@ -81,6 +81,9 @@
 - Removed the top workspace title/role header from the main sidebar to reduce vertical clutter.
 - Removed the noisy Collapse All control from the top of the main sidebar.
 - Removed the empty desktop sidebar header spacer in normal mode so the Overview section aligns with the dashboard breadcrumb row.
+- Tuned desktop sidebar top spacing so the first sidebar section aligns with the dashboard breadcrumb row without restoring the old header clutter.
+- Removed lower-priority sidebar/search entries: Orders Returns & Refunds, Reviews Reported, Shipping Zones, Shipping Pending Review, and Marketing SEO.
+- Soft-disabled `/marketing/seo` with redirects back to Marketing while leaving deeper SEO code for a later deletion pass.
 
 ### Files Changed
 - `apps/admin/app/api/storefront/categories/route.ts`
@@ -127,6 +130,8 @@
 - `apps/admin/components/nav-main.tsx`
 - `apps/admin/components/storage-indicator.tsx`
 - `apps/admin/components/workspace-sidebar.tsx`
+- `apps/admin/app/(dashboard)/marketing/seo/layout.tsx`
+- `apps/admin/app/(dashboard)/marketing/seo/page.tsx`
 - `apps/admin/lib/keybindings.ts`
 - `.Codex/changelog.md`
 
@@ -143,6 +148,7 @@
 - Settings routes also remain intact, but are no longer shown as a sidebar section.
 - The main sidebar no longer needs workspace name/role props because the workspace switcher rail already owns workspace identity.
 - Desktop normal sidebar mode no longer needs a header block because search lives in the top toolbar there; the sidebar header is still kept for mobile search and workflow mode.
+- Returns/refunds, reported reviews, shipping zones, shipping pending review, and SEO are now hidden from primary navigation/search but can be deeper-deleted later if the team confirms those workflows are out.
 - The first pass intentionally leaves deeper route folders, actions, schemas, and dependencies in place for a later deletion pass so ecommerce/product/order flows remain low-risk.
 - The ecommerce core is present and worth preserving: dashboard, analytics, orders, products, categories, variants, reviews, auctions, customers, inventory, subscriptions, shipping, suppliers, storefront API, storefront settings, payment settings, tax, team/settings, and API keys/webhooks.
 - The strongest removal candidates are automation/workflows, marketing campaigns/email/referrals/SEO, CRM/sales/calls/scheduling, notifications/messages/activity-log duplication, billing/pricing/Polar subscription gating, music/social/server/presence features, and generic content/blog/pages if Quickdash is being narrowed to ecommerce store operations.
@@ -159,6 +165,7 @@
 - Focused Biome lint passed for the sidebar/settings/developer navigation restructure.
 - Focused Biome lint passed for removing the sidebar workspace title/role header.
 - Focused Biome lint passed for removing the Collapse All sidebar control and aligning the first sidebar section with the breadcrumb row.
+- Focused Biome lint passed for the latest sidebar/search pruning and SEO redirect stubs.
 - `tsc --noEmit -p apps/admin/tsconfig.json` passed using the app-local TypeScript binary.
 - `pnpm exec` commands are currently blocked by pnpm attempting an interactive modules purge; direct local binaries work.
 

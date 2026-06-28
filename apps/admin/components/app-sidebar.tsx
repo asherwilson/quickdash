@@ -161,7 +161,6 @@ const data = {
       icon: ShoppingBag01Icon,
       items: [
         { title: "All Orders", url: "/orders" },
-        { title: "Returns & Refunds", url: "/orders/returns" },
         { title: "Fulfillment", url: "/orders/fulfillment" },
       ],
     },
@@ -182,7 +181,6 @@ const data = {
       items: [
         { title: "All Reviews", url: "/reviews" },
         { title: "Pending", url: "/reviews/pending" },
-        { title: "Reported", url: "/reviews/reported" },
       ],
     },
     {
@@ -235,10 +233,8 @@ const data = {
       icon: DeliveryTracking01Icon,
       items: [
         { title: "Carriers & Rates", url: "/shipping" },
-        { title: "Zones", url: "/shipping/zones" },
         { title: "Labels", url: "/shipping/labels" },
         { title: "Tracking", url: "/shipping/tracking" },
-        { title: "Pending Review", url: "/shipping/tracking/pending" },
       ],
     },
     {
@@ -259,7 +255,6 @@ const data = {
         { title: "Campaigns", url: "/marketing/campaigns" },
         { title: "Email Templates", url: "/marketing/email-templates" },
         { title: "Referrals", url: "/marketing/referrals" },
-        { title: "SEO", url: "/marketing/seo" },
       ],
     },
     {
@@ -814,7 +809,6 @@ export function AppSidebar({
           items: item.items.map((sub) => {
             if (sub.title === "Campaigns") return lockSub(sub, "campaigns")
             if (sub.title === "Email Templates") return lockSub(sub, "emailTemplates")
-            if (sub.title === "SEO") return lockSub(sub, "seo")
             return sub
           }),
         }
@@ -830,7 +824,6 @@ export function AppSidebar({
           ...item,
           items: item.items.map((sub) => {
             if (sub.title === "Tracking") return lockSub(sub, "tracking")
-            if (sub.title === "Pending Review") return lockSub(sub, "pendingReview")
             return sub
           }),
         }
@@ -919,6 +912,7 @@ export function AppSidebar({
               </SidebarHeader>
             )}
             <SidebarContent
+              className={isWorkflowMode ? undefined : "pt-2"}
               onScrollPosition={isWorkflowMode ? undefined : sidebarState.setScrollPosition}
               initialScrollTop={isWorkflowMode ? 0 : sidebarState.scrollPosition}
             >

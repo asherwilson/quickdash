@@ -16,9 +16,9 @@ import { MusicPlayerProvider, MusicPlayerLoader } from "@/components/music-playe
 import { ToolbarProvider, ToolbarPanel, WidgetPanels } from "@/components/toolbar"
 import { KeyboardShortcutsProvider } from "@/components/keyboard-shortcuts"
 import { SidebarModeProvider } from "@/lib/sidebar-mode"
-import { WorkspaceSidebarWrapper, SidebarOffsetLayout } from "@/components/workspace-sidebar-wrapper"
 import { getUserWorkspaces, getActiveWorkspace } from "@/lib/workspace"
 import { SidebarSwipe } from "@/components/sidebar-swipe"
+import { WorkspaceSwitcher } from "@/components/workspace-switcher"
 import {
   SidebarInset,
   SidebarProvider,
@@ -144,26 +144,23 @@ export default async function DashboardLayout({
         <MusicPlayerProvider>
           <ToolbarProvider features={activeWorkspace?.features}>
               <SidebarModeProvider>
-                <WorkspaceSidebarWrapper
-                  workspaces={workspaces}
-                  activeWorkspaceId={activeWorkspace?.id ?? null}
-                />
-                <SidebarOffsetLayout>
                 <SidebarProvider defaultOpen={sidebarOpen}>
                 <RightSidebarProvider defaultOpen={false}>
                   <CommandMenuWrapper />
                   <KeyboardShortcutsProvider>
                     <AppSidebar
-                      workspaces={workspaces}
-                      activeWorkspaceId={activeWorkspace?.id ?? null}
                       collections={collections}
                       features={activeWorkspace?.features}
                     />
                     <SidebarSwipe />
                     <SidebarInset className="md:flex md:flex-col">
                       <BreadcrumbProvider>
-                        <header className="flex h-16 shrink-0 items-center justify-between gap-2">
+                        <header className="sticky top-[var(--mode-banner-height,0px)] z-40 flex h-16 shrink-0 items-center justify-between gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
                           <div className="flex items-center gap-2 px-4 min-w-0">
+                            <WorkspaceSwitcher
+                              workspaces={workspaces}
+                              activeWorkspace={activeWorkspace}
+                            />
                             {/* Mobile sidebar trigger */}
                             <SidebarTrigger className="md:hidden" />
                             <div className="min-w-0 overflow-x-auto sm:overflow-hidden [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
@@ -190,7 +187,6 @@ export default async function DashboardLayout({
                   </KeyboardShortcutsProvider>
                 </RightSidebarProvider>
               </SidebarProvider>
-              </SidebarOffsetLayout>
               </SidebarModeProvider>
 
             {/* Music Player - loads user tracks */}

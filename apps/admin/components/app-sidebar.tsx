@@ -112,8 +112,6 @@ import { TRIGGER_CATEGORIES, ACTION_CATEGORIES } from "@/app/(dashboard)/automat
 import type { WorkflowTrigger, WorkflowAction } from "@quickdash/db/schema"
 import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { WorkspaceSidebar } from "@/components/workspace-sidebar"
-import type { WorkspaceWithRole } from "@/lib/workspace"
 import type { WorkspaceFeatures } from "@quickdash/db/schema"
 import {
   Sidebar,
@@ -746,14 +744,10 @@ type CollectionNavItem = {
 }
 
 export function AppSidebar({
-  workspaces = [],
-  activeWorkspaceId = null,
   collections = [],
   features,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
-  workspaces?: WorkspaceWithRole[]
-  activeWorkspaceId?: string | null
   collections?: CollectionNavItem[]
   features?: WorkspaceFeatures
 }) {
@@ -856,50 +850,19 @@ export function AppSidebar({
     })
   }, [features])
 
-  // On mobile, we render the workspace/servers bar inside the sidebar sheet
-  // so they slide out together as one unit
-  const showMobileSidebarWithBar = isMobile
-
   return (
     <SidebarStateContext.Provider value={sidebarState}>
       <Sidebar variant="inset" collapsible={collapsible} {...props}>
-        {/* Mobile: workspace/servers bar + main sidebar side by side */}
-        {showMobileSidebarWithBar ? (
-          <div className="flex h-full">
-            <WorkspaceSidebar
-              workspaces={workspaces}
-              activeWorkspaceId={activeWorkspaceId}
-            />
-            <div className="flex flex-col flex-1 min-w-0">
-              <SidebarHeader>
-                {isWorkflowMode ? (
-                  <WorkflowHeader />
-                ) : (
-                  <NormalHeader openCommandMenu={openCommandMenu} />
-                )}
-              </SidebarHeader>
-              <SidebarContent
-                onScrollPosition={isWorkflowMode ? undefined : sidebarState.setScrollPosition}
-                initialScrollTop={isWorkflowMode ? 0 : sidebarState.scrollPosition}
-              >
-                {isWorkflowMode ? (
-                  <WorkflowSidebarContent />
-                ) : (
-                  <NormalSidebarContent navOverview={navOverview} navOperations={navOperations} navStore={navStore} />
-                )}
-              </SidebarContent>
-              <SidebarFooter>
-                <StorageIndicator />
-              </SidebarFooter>
-            </div>
-          </div>
-        ) : (
-          <>
-            {isWorkflowMode && (
-              <SidebarHeader>
-                <WorkflowHeader />
-              </SidebarHeader>
-            )}
+        {isWorkflowMode && (
+          <SidebarHeader>
+            <WorkflowHeader />
+          </SidebarHeader>
+        )}
+        {isMobile && !isWorkflowMode && (
+          <SidebarHeader>
+            <NormalHeader openCommandMenu={openCommandMenu} />
+          </SidebarHeader>
+        )}
             <SidebarContent
               className={isWorkflowMode ? undefined : "pt-2"}
               onScrollPosition={isWorkflowMode ? undefined : sidebarState.setScrollPosition}
@@ -914,8 +877,6 @@ export function AppSidebar({
             <SidebarFooter>
               <StorageIndicator />
             </SidebarFooter>
-          </>
-        )}
       </Sidebar>
     </SidebarStateContext.Provider>
   )

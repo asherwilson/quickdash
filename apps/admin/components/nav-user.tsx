@@ -5,6 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import {
   UnfoldMoreIcon,
   Logout01Icon,
+  Settings02Icon,
 } from "@hugeicons/core-free-icons"
 import { signOut } from "@/lib/auth-client"
 import { logSignOut } from "@/app/(dashboard)/settings/sessions/sign-out-action"
@@ -119,6 +120,11 @@ export function NavUser({
           </div>
         </button>
       </DropdownMenuLabel>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem onClick={() => router.push("/settings")}>
+        <HugeiconsIcon icon={Settings02Icon} size={16} />
+        Settings
+      </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem
         onSelect={(e) => {

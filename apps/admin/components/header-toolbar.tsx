@@ -8,7 +8,6 @@ import {
   AddSquareIcon,
   Store01Icon,
   DashboardSquare01Icon,
-  Settings02Icon,
 } from "@hugeicons/core-free-icons"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -19,9 +18,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -215,72 +211,6 @@ export function HeaderToolbar({ storefrontUrl, initialMaintenanceMode, initialSa
           <span className="text-xs">⌘</span>K
         </kbd>
       </button>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8"
-            title="Settings"
-          >
-            <HugeiconsIcon icon={Settings02Icon} size={16} />
-            <span className="sr-only">Settings</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel>Settings</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => router.push("/settings")}>
-            All Settings
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/activity-log")}>
-            Activity Log
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => router.push("/settings/account")}>
-            Account
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/settings/sessions")}>
-            Sessions
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/settings/storefronts")}>
-            Storefronts
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/settings/payments")}>
-            Payments
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/settings/tax")}>
-            Tax
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/settings/shipping")}>
-            Shipping
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/settings/exports")}>
-            Exports
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/settings/integrations")}>
-            Integrations
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>Developer Tools</DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="w-48">
-              <DropdownMenuItem onClick={() => router.push("/developers/api-keys")}>
-                API Keys
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push("/developers/webhooks")}>
-                Webhook Events
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push("/developers/notes")}>
-                Notes & Bugs
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push("/developers/changelog")}>
-                Changelog
-              </DropdownMenuItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
-        </DropdownMenuContent>
-      </DropdownMenu>
 
       <Separator orientation="vertical" className="data-[orientation=vertical]:h-4" />
       <ThemeToggle />

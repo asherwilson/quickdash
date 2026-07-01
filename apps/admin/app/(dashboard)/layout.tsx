@@ -156,7 +156,7 @@ export default async function DashboardLayout({
                     <SidebarSwipe />
                     <SidebarInset className="md:flex md:flex-col">
                       <BreadcrumbProvider>
-                        <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b bg-background">
+                        <header className="sticky top-[var(--mode-banner-height,0px)] z-40 flex h-16 shrink-0 items-center justify-between gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
                           <div className="flex items-center gap-2 px-4 min-w-0">
                             {/* Mobile sidebar trigger */}
                             <SidebarTrigger className="md:hidden" />

@@ -1,6 +1,6 @@
 "use server"
 
-import { eq, and, desc, count, ilike, inArray, asc } from "@quickdash/db/drizzle"
+import { eq, and, desc, count, ilike, inArray, sql } from "@quickdash/db/drizzle"
 import { db } from "@quickdash/db/client"
 import { products, productVariants, categories, inventory } from "@quickdash/db/schema"
 import { logAudit } from "@/lib/audit"
@@ -49,31 +49,54 @@ export async function getProducts(params: GetProductsParams = {}) {
 
 	const where = and(...conditions)
 
-	const [items, [total]] = await Promise.all([
-		db
-			.select({
-				id: products.id,
-				name: products.name,
-				slug: products.slug,
-				price: products.price,
-				thumbnail: products.thumbnail,
-				isActive: products.isActive,
-			isFeatured: products.isFeatured,
-			categoryId: products.categoryId,
-			categoryName: categories.name,
-			sortOrder: products.sortOrder,
-			createdAt: products.createdAt,
-		})
-			.from(products)
-			.leftJoin(categories, eq(products.categoryId, categories.id))
-			.where(where)
-			.orderBy(asc(products.sortOrder), desc(products.createdAt))
-			.limit(pageSize)
-			.offset(offset),
-		db.select({ count: count() }).from(products).where(where),
-	])
+	const productSelect = {
+		id: products.id,
+		name: products.name,
+		slug: products.slug,
+		price: products.price,
+		thumbnail: products.thumbnail,
+		isActive: products.isActive,
+		isFeatured: products.isFeatured,
+		categoryId: products.categoryId,
+		categoryName: categories.name,
+		createdAt: products.createdAt,
+	}
 
-	return { items, totalCount: Number(total.count) }
+	try {
+		const [items, [total]] = await Promise.all([
+			db
+				.select({
+					...productSelect,
+					sortOrder: sql<number>`"products"."sort_order"`.as("sortOrder"),
+				})
+				.from(products)
+				.leftJoin(categories, eq(products.categoryId, categories.id))
+				.where(where)
+				.orderBy(sql`"products"."sort_order"`, desc(products.createdAt))
+				.limit(pageSize)
+				.offset(offset),
+			db.select({ count: count() }).from(products).where(where),
+		])
+
+		return { items, totalCount: Number(total.count) }
+	} catch {
+		const [items, [total]] = await Promise.all([
+			db
+				.select({
+					...productSelect,
+					sortOrder: sql<number>`0`.as("sortOrder"),
+				})
+				.from(products)
+				.leftJoin(categories, eq(products.categoryId, categories.id))
+				.where(where)
+				.orderBy(desc(products.createdAt))
+				.limit(pageSize)
+				.offset(offset),
+			db.select({ count: count() }).from(products).where(where),
+		])
+
+		return { items, totalCount: Number(total.count) }
+	}
 }
 
 export async function getProduct(id: string) {
@@ -162,7 +185,6 @@ export async function createProduct(data: ProductData) {
 			sourceType: data.sourceType || "owned",
 			categoryId: data.categoryId || null,
 			tags: data.tags || [],
-			sortOrder: 0,
 			images: data.images || [],
 			thumbnail: data.thumbnail || null,
 			isActive: data.isActive ?? true,
@@ -191,11 +213,11 @@ export async function createProduct(data: ProductData) {
 			price: product.price,
 			thumbnail: product.thumbnail,
 			isActive: product.isActive,
-		isFeatured: product.isFeatured,
-		categoryId: product.categoryId,
-		sortOrder: product.sortOrder,
-		createdAt: product.createdAt?.toISOString(),
-	})
+			isFeatured: product.isFeatured,
+			categoryId: product.categoryId,
+			sortOrder: 0,
+			createdAt: product.createdAt?.toISOString(),
+		})
 	}
 
 	// Fire outgoing webhook
@@ -227,10 +249,11 @@ export async function reorderProducts(productIds: string[], startIndex = 0) {
 
 	await Promise.all(
 		productIds.map((id, index) =>
-			db
-				.update(products)
-				.set({ sortOrder: startIndex + index, updatedAt: new Date() })
-				.where(and(eq(products.id, id), eq(products.workspaceId, workspace.id)))
+			db.execute(sql`
+				UPDATE "products"
+				SET "sort_order" = ${startIndex + index}, "updated_at" = ${new Date()}
+				WHERE "id" = ${id} AND "workspace_id" = ${workspace.id}
+			`)
 		)
 	)
 }

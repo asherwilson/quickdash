@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { toast } from "sonner"
@@ -12,7 +12,7 @@ import { formatCurrency, formatDate } from "@/lib/format"
 import { useLiveProducts, type LiveProduct } from "@/hooks/use-live-products"
 import { useProductsParams } from "@/hooks/use-table-params"
 import { cn } from "@/lib/utils"
-import { bulkUpdateProducts } from "./actions"
+import { bulkUpdateProducts, reorderProducts } from "./actions"
 
 interface Category {
 	id: string
@@ -36,6 +36,11 @@ export function ProductsTable({
 	const { products } = useLiveProducts({ initialProducts })
 	const [selectedIds, setSelectedIds] = useState<string[]>([])
 	const [loading, setLoading] = useState(false)
+	const [orderedProducts, setOrderedProducts] = useState<LiveProduct[]>(products)
+
+	useEffect(() => {
+		setOrderedProducts(products)
+	}, [products])
 
 	const columns: Column<LiveProduct>[] = [
 		{
@@ -125,10 +130,33 @@ export function ProductsTable({
 		}
 	}
 
+	const handleReorder = async (orderedIds: string[]) => {
+		const previousProducts = orderedProducts
+		const byId = new Map(orderedProducts.map((product) => [product.id, product]))
+		const reorderedProducts = orderedIds
+			.map((id) => byId.get(id))
+			.filter((product): product is LiveProduct => Boolean(product))
+		const reorderedIds = new Set(orderedIds)
+		let nextIndex = 0
+		const nextProducts = orderedProducts.map((product) =>
+			reorderedIds.has(product.id) ? reorderedProducts[nextIndex++] : product
+		)
+
+		setOrderedProducts(nextProducts)
+
+		try {
+			await reorderProducts(orderedIds, (params.page - 1) * 25)
+			toast.success("Product order saved")
+		} catch {
+			setOrderedProducts(previousProducts)
+			toast.error("Failed to save product order")
+		}
+	}
+
 	return (
 		<DataTable
 			columns={columns}
-			data={products}
+			data={orderedProducts}
 			searchPlaceholder="Search products..."
 			totalCount={totalCount}
 			currentPage={params.page}
@@ -138,6 +166,8 @@ export function ProductsTable({
 			selectedIds={selectedIds}
 			onSelectionChange={setSelectedIds}
 			getId={(row) => row.id}
+			reorderable
+			onReorder={handleReorder}
 			onRowClick={(row) => router.push(`/products/${row.id}`)}
 			emptyMessage="No products yet"
 			emptyDescription="Create your first product to get started."

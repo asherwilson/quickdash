@@ -112,6 +112,8 @@ import { TRIGGER_CATEGORIES, ACTION_CATEGORIES } from "@/app/(dashboard)/automat
 import type { WorkflowTrigger, WorkflowAction } from "@quickdash/db/schema"
 import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { WorkspaceSwitcher } from "@/components/workspace-switcher"
+import type { WorkspaceContext, WorkspaceWithRole } from "@/lib/workspace"
 import type { WorkspaceFeatures } from "@quickdash/db/schema"
 import {
   Sidebar,
@@ -744,10 +746,14 @@ type CollectionNavItem = {
 }
 
 export function AppSidebar({
+  workspaces = [],
+  activeWorkspace = null,
   collections = [],
   features,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
+  workspaces?: WorkspaceWithRole[]
+  activeWorkspace?: WorkspaceContext | WorkspaceWithRole | null
   collections?: CollectionNavItem[]
   features?: WorkspaceFeatures
 }) {
@@ -858,9 +864,16 @@ export function AppSidebar({
             <WorkflowHeader />
           </SidebarHeader>
         )}
-        {isMobile && !isWorkflowMode && (
+        {!isWorkflowMode && (
           <SidebarHeader>
+            <WorkspaceSwitcher
+              workspaces={workspaces}
+              activeWorkspace={activeWorkspace}
+              className="w-full max-w-none justify-start bg-sidebar-accent/50"
+            />
+            {isMobile && (
             <NormalHeader openCommandMenu={openCommandMenu} />
+            )}
           </SidebarHeader>
         )}
             <SidebarContent

@@ -7,6 +7,7 @@ import {
 	timestamp,
 	jsonb,
 	index,
+	integer,
 } from "drizzle-orm/pg-core";
 import { categories } from "./categories";
 import { suppliers } from "./suppliers";
@@ -37,6 +38,7 @@ export const products = pgTable(
 		// Organization
 		categoryId: uuid("category_id").references(() => categories.id),
 		tags: jsonb("tags").$type<string[]>().default([]),
+		sortOrder: integer("sort_order").default(0),
 
 		// Media
 		images: jsonb("images").$type<string[]>().default([]),

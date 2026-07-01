@@ -18,7 +18,6 @@ import { KeyboardShortcutsProvider } from "@/components/keyboard-shortcuts"
 import { SidebarModeProvider } from "@/lib/sidebar-mode"
 import { getUserWorkspaces, getActiveWorkspace } from "@/lib/workspace"
 import { SidebarSwipe } from "@/components/sidebar-swipe"
-import { WorkspaceSwitcher } from "@/components/workspace-switcher"
 import {
   SidebarInset,
   SidebarProvider,
@@ -149,18 +148,16 @@ export default async function DashboardLayout({
                   <CommandMenuWrapper />
                   <KeyboardShortcutsProvider>
                     <AppSidebar
+                      workspaces={workspaces}
+                      activeWorkspace={activeWorkspace}
                       collections={collections}
                       features={activeWorkspace?.features}
                     />
                     <SidebarSwipe />
                     <SidebarInset className="md:flex md:flex-col">
                       <BreadcrumbProvider>
-                        <header className="sticky top-[var(--mode-banner-height,0px)] z-40 flex h-16 shrink-0 items-center justify-between gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+                        <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b bg-background">
                           <div className="flex items-center gap-2 px-4 min-w-0">
-                            <WorkspaceSwitcher
-                              workspaces={workspaces}
-                              activeWorkspace={activeWorkspace}
-                            />
                             {/* Mobile sidebar trigger */}
                             <SidebarTrigger className="md:hidden" />
                             <div className="min-w-0 overflow-x-auto sm:overflow-hidden [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">

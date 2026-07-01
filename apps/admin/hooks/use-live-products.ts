@@ -13,6 +13,7 @@ export interface LiveProduct {
 	isFeatured: boolean | null
 	categoryId: string | null
 	categoryName: string | null
+	sortOrder: number | null
 	createdAt: Date
 	isNew?: boolean
 }
@@ -26,6 +27,7 @@ interface ProductCreatedEvent {
 	isActive: boolean | null
 	isFeatured: boolean | null
 	categoryId: string | null
+	sortOrder?: number | null
 	createdAt: string
 }
 
@@ -38,6 +40,7 @@ interface ProductUpdatedEvent {
 	isActive?: boolean | null
 	isFeatured?: boolean | null
 	categoryId?: string | null
+	sortOrder?: number | null
 }
 
 interface ProductDeletedEvent {
@@ -83,6 +86,7 @@ export function useLiveProducts({ initialProducts }: UseLiveProductsOptions) {
 				const newProduct: LiveProduct = {
 					...data,
 					categoryName: null, // Will be filled on next server fetch
+					sortOrder: data.sortOrder ?? 0,
 					createdAt: new Date(data.createdAt),
 					isNew: true,
 				}
@@ -110,6 +114,7 @@ export function useLiveProducts({ initialProducts }: UseLiveProductsOptions) {
 								...(data.isActive !== undefined && { isActive: data.isActive }),
 								...(data.isFeatured !== undefined && { isFeatured: data.isFeatured }),
 								...(data.categoryId !== undefined && { categoryId: data.categoryId }),
+								...(data.sortOrder !== undefined && { sortOrder: data.sortOrder }),
 						  }
 						: p
 				)

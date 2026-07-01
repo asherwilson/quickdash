@@ -118,6 +118,19 @@ export async function updateCategory(id: string, data: Partial<CategoryData>) {
 	return category
 }
 
+export async function reorderCategories(categoryIds: string[], startIndex = 0) {
+	const workspace = await requireCategoriesPermission()
+
+	await Promise.all(
+		categoryIds.map((id, index) =>
+			db
+				.update(categories)
+				.set({ sortOrder: startIndex + index })
+				.where(and(eq(categories.id, id), eq(categories.workspaceId, workspace.id)))
+		)
+	)
+}
+
 export async function deleteCategory(id: string) {
 	const workspace = await requireCategoriesPermission()
 

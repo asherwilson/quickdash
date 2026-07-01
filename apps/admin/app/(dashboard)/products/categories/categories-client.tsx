@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { slugify } from "@/lib/format"
-import { createCategory, updateCategory, deleteCategory, bulkDeleteCategories } from "./actions"
+import { createCategory, updateCategory, deleteCategory, bulkDeleteCategories, reorderCategories } from "./actions"
 import { useDraft, type Draft } from "@/lib/use-draft"
 import { DraftIndicator, DraftStatus } from "@/components/drafts-manager"
 import { MediaUploader, type MediaItem } from "@/components/media-uploader"
@@ -57,6 +57,7 @@ export function CategoriesClient({ categories, totalCount, currentPage }: Catego
 	const [loading, setLoading] = useState(false)
 	const [selectedIds, setSelectedIds] = useState<string[]>([])
 	const [parentFilter, setParentFilter] = useState("all")
+	const [orderedCategories, setOrderedCategories] = useState(categories)
 
 	const [name, setName] = useState("")
 	const [slug, setSlug] = useState("")
@@ -64,6 +65,10 @@ export function CategoriesClient({ categories, totalCount, currentPage }: Catego
 	const [parentId, setParentId] = useState("")
 	const [isFeatured, setIsFeatured] = useState(false)
 	const [mediaItems, setMediaItems] = useState<MediaItem[]>([])
+
+	useEffect(() => {
+		setOrderedCategories(categories)
+	}, [categories])
 
 	// Draft support
 	type CategoryFormData = {
@@ -189,15 +194,38 @@ export function CategoriesClient({ categories, totalCount, currentPage }: Catego
 		}
 	}
 
-	const parentMap = new Map(categories.map((c) => [c.id, c.name]))
+	const handleReorder = async (orderedIds: string[]) => {
+		const previousCategories = orderedCategories
+		const byId = new Map(orderedCategories.map((category) => [category.id, category]))
+		const reorderedCategories = orderedIds
+			.map((id) => byId.get(id))
+			.filter((category): category is Category => Boolean(category))
+		const reorderedIds = new Set(orderedIds)
+		let nextIndex = 0
+		const nextCategories = orderedCategories.map((category) =>
+			reorderedIds.has(category.id) ? reorderedCategories[nextIndex++] : category
+		)
+
+		setOrderedCategories(nextCategories)
+
+		try {
+			await reorderCategories(orderedIds, (currentPage - 1) * 25)
+			toast.success("Category order saved")
+		} catch {
+			setOrderedCategories(previousCategories)
+			toast.error("Failed to save category order")
+		}
+	}
+
+	const parentMap = new Map(orderedCategories.map((c) => [c.id, c.name]))
 
 	const filteredCategories = parentFilter === "all"
-		? categories
+		? orderedCategories
 		: parentFilter === "top-level"
-			? categories.filter((c) => !c.parentId)
-			: categories.filter((c) => c.parentId === parentFilter)
+			? orderedCategories.filter((c) => !c.parentId)
+			: orderedCategories.filter((c) => c.parentId === parentFilter)
 
-	const topLevelCategories = categories.filter((c) => !c.parentId)
+	const topLevelCategories = orderedCategories.filter((c) => !c.parentId)
 
 	const columns: Column<Category>[] = [
 		{
@@ -278,6 +306,8 @@ export function CategoriesClient({ categories, totalCount, currentPage }: Catego
 				selectedIds={selectedIds}
 				onSelectionChange={setSelectedIds}
 				getId={(row) => row.id}
+				reorderable
+				onReorder={handleReorder}
 				onRowClick={(row) => openEdit(row)}
 				emptyMessage="No categories yet"
 				emptyDescription="Create categories to organize your products."

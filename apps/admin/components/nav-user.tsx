@@ -22,6 +22,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -121,10 +124,60 @@ export function NavUser({
         </button>
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
-      <DropdownMenuItem onClick={() => router.push("/settings")}>
-        <HugeiconsIcon icon={Settings02Icon} size={16} />
-        Settings
-      </DropdownMenuItem>
+      <DropdownMenuSub>
+        <DropdownMenuSubTrigger>
+          <HugeiconsIcon icon={Settings02Icon} size={16} />
+          Settings
+        </DropdownMenuSubTrigger>
+        <DropdownMenuSubContent className="w-56">
+          <DropdownMenuLabel>Settings</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => router.push("/settings")}>
+            All Settings
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/activity-log")}>
+            Activity Log
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => router.push("/settings/account")}>
+            Account
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/settings/sessions")}>
+            Sessions
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/settings/storefronts")}>
+            Storefronts
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/settings/payments")}>
+            Payments
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/settings/tax")}>
+            Tax
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/settings/shipping")}>
+            Shipping
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/settings/exports")}>
+            Exports
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/settings/integrations")}>
+            Integrations
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Developer Tools</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => router.push("/developers/api-keys")}>
+            API Keys
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/developers/webhooks")}>
+            Webhook Events
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/developers/notes")}>
+            Notes & Bugs
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/developers/changelog")}>
+            Changelog
+          </DropdownMenuItem>
+        </DropdownMenuSubContent>
+      </DropdownMenuSub>
       <DropdownMenuSeparator />
       <DropdownMenuItem
         onSelect={(e) => {

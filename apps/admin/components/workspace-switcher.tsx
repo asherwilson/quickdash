@@ -175,9 +175,11 @@ function CreateWorkspaceDialog({
 export function WorkspaceSwitcher({
   workspaces,
   activeWorkspace,
+  className,
 }: {
   workspaces: WorkspaceWithRole[]
   activeWorkspace: WorkspaceContext | WorkspaceWithRole | null
+  className?: string
 }) {
   const router = useRouter()
   const [switching, setSwitching] = React.useState(false)
@@ -237,7 +239,10 @@ export function WorkspaceSwitcher({
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="flex h-8 min-w-0 max-w-[220px] items-center gap-2 rounded-lg border border-input bg-background px-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className={cn(
+              "flex h-8 min-w-0 max-w-[220px] items-center gap-2 rounded-lg border border-input bg-background px-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+              className
+            )}
           >
             <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary text-[10px] font-semibold text-primary-foreground">
               {getInitials(activeWorkspace?.name || "Workspace")}

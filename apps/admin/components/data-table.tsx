@@ -2,6 +2,24 @@
 
 import * as React from "react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { DragDropHorizontalIcon } from "@hugeicons/core-free-icons"
+import {
+	DndContext,
+	KeyboardSensor,
+	PointerSensor,
+	closestCenter,
+	type DragEndEvent,
+	useSensor,
+	useSensors,
+} from "@dnd-kit/core"
+import {
+	SortableContext,
+	sortableKeyboardCoordinates,
+	useSortable,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import {
 	Table,
 	TableHeader,
@@ -41,13 +59,62 @@ interface DataTableProps<T> {
 	filters?: React.ReactNode
 	emptyMessage?: string
 	emptyDescription?: string
+	reorderable?: boolean
+	onReorder?: (ids: string[]) => void | Promise<void>
+}
+
+function SortableTableRow({
+	id,
+	className,
+	onClick,
+	children,
+}: {
+	id: string
+	className?: string
+	onClick?: React.MouseEventHandler<HTMLTableRowElement>
+	children: React.ReactNode
+}) {
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({ id })
+
+	return (
+		<TableRow
+			ref={setNodeRef}
+			style={{
+				transform: CSS.Transform.toString(transform),
+				transition,
+				opacity: isDragging ? 0.5 : 1,
+			}}
+			className={className}
+			onClick={onClick}
+		>
+			<TableCell data-drag-cell className="w-10" onClick={(e) => e.stopPropagation()}>
+				<button
+					type="button"
+					{...attributes}
+					{...listeners}
+					className="touch-none cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing"
+					aria-label="Reorder row"
+				>
+					<HugeiconsIcon icon={DragDropHorizontalIcon} size={16} />
+				</button>
+			</TableCell>
+			{children}
+		</TableRow>
+	)
 }
 
 export function DataTable<T>({
 	columns,
 	data,
 	searchPlaceholder = "Search...",
-	searchKey = "search",
+	searchKey: _searchKey = "search",
 	totalCount,
 	pageSize = 25,
 	currentPage,
@@ -61,6 +128,8 @@ export function DataTable<T>({
 	filters,
 	emptyMessage = "No results found",
 	emptyDescription,
+	reorderable = false,
+	onReorder,
 }: DataTableProps<T>) {
 	const router = useRouter()
 	const pathname = usePathname()
@@ -69,6 +138,14 @@ export function DataTable<T>({
 
 	// Internal page state for tables that don't manage pagination externally
 	const [internalPage, setInternalPage] = React.useState(1)
+	const sensors = useSensors(
+		useSensor(PointerSensor, {
+			activationConstraint: { distance: 8 },
+		}),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		})
+	)
 
 	// Server-side pagination: totalCount is provided, data is already the current page
 	const isServerPaginated = totalCount !== undefined
@@ -103,13 +180,6 @@ export function DataTable<T>({
 		const start = (effectivePage - 1) * pageSize
 		return filteredData.slice(start, start + pageSize)
 	}, [filteredData, isServerPaginated, effectivePage, pageSize])
-
-	// Reset to page 1 when search changes (client-side only)
-	React.useEffect(() => {
-		if (!isServerPaginated) {
-			setInternalPage(1)
-		}
-	}, [search, isServerPaginated])
 
 	const handlePageChange = React.useCallback(
 		(page: number) => {
@@ -149,6 +219,21 @@ export function DataTable<T>({
 		}
 	}
 
+	const handleDragEnd = (event: DragEndEvent) => {
+		if (!reorderable || !getId || !onReorder) return
+		const { active, over } = event
+		if (!over || active.id === over.id) return
+
+		const oldIndex = displayData.findIndex((row) => getId(row) === active.id)
+		const newIndex = displayData.findIndex((row) => getId(row) === over.id)
+		if (oldIndex === -1 || newIndex === -1) return
+
+		const nextRows = [...displayData]
+		const [moved] = nextRows.splice(oldIndex, 1)
+		nextRows.splice(newIndex, 0, moved)
+		onReorder(nextRows.map(getId))
+	}
+
 	// Range of items being shown
 	const startItem = isServerPaginated
 		? (effectivePage - 1) * pageSize + 1
@@ -170,7 +255,10 @@ export function DataTable<T>({
 					<Input
 						placeholder={searchPlaceholder}
 						value={search}
-						onChange={(e) => setSearch(e.target.value)}
+						onChange={(e) => {
+							setSearch(e.target.value)
+							if (!isServerPaginated) setInternalPage(1)
+						}}
 						className="h-9"
 					/>
 				</div>
@@ -187,9 +275,11 @@ export function DataTable<T>({
 			)}
 
 			<div className="rounded-lg border overflow-x-auto">
+				<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
 				<Table className="min-w-150">
 					<TableHeader>
 						<TableRow>
+							{reorderable && <TableHead className="w-10" />}
 							{selectable && (
 								<TableHead className="w-10">
 									<Checkbox
@@ -209,7 +299,7 @@ export function DataTable<T>({
 						{displayData.length === 0 ? (
 							<TableRow>
 								<TableCell
-									colSpan={columns.length + (selectable ? 1 : 0)}
+									colSpan={columns.length + (selectable ? 1 : 0) + (reorderable ? 1 : 0)}
 									className="h-32 text-center"
 								>
 									<div className="space-y-1">
@@ -220,6 +310,41 @@ export function DataTable<T>({
 									</div>
 								</TableCell>
 							</TableRow>
+						) : reorderable && getId ? (
+							<SortableContext items={displayData.map(getId)} strategy={verticalListSortingStrategy}>
+								{displayData.map((row, i) => {
+								const id = getId?.(row) ?? String(i)
+								return (
+									<SortableTableRow
+										key={id}
+										id={id}
+										className={cn(
+											onRowClick && "cursor-pointer",
+											selectedIds.includes(id) && "bg-muted/50"
+										)}
+										onClick={(e) => {
+											const target = e.target as HTMLElement
+											if (target.closest('[role="checkbox"]') || target.closest('[data-checkbox-cell]') || target.closest('[data-drag-cell]')) return
+											onRowClick?.(row)
+										}}
+									>
+										{selectable && (
+											<TableCell data-checkbox-cell onClick={(e) => e.stopPropagation()}>
+												<Checkbox
+													checked={selectedIds.includes(id)}
+													onCheckedChange={() => toggleRow(id)}
+												/>
+											</TableCell>
+										)}
+										{columns.map((col) => (
+											<TableCell key={col.key} className={col.className}>
+												{col.cell(row)}
+											</TableCell>
+										))}
+									</SortableTableRow>
+								)
+							})}
+							</SortableContext>
 						) : (
 							displayData.map((row, i) => {
 								const id = getId?.(row) ?? String(i)
@@ -255,6 +380,7 @@ export function DataTable<T>({
 						)}
 					</TableBody>
 				</Table>
+				</DndContext>
 			</div>
 
 			{/* Pagination - always show when there are multiple pages */}

@@ -16,8 +16,6 @@ interface SubscriptionsTableProps {
 	subscriptions: LiveSubscription[]
 	totalCount: number
 	currentStatus?: string
-	basePath?: string
-	description?: string
 }
 
 const statuses = ["active", "paused", "cancelled", "dunning"]
@@ -26,8 +24,6 @@ export function SubscriptionsTable({
 	subscriptions: initialSubscriptions,
 	totalCount,
 	currentStatus,
-	basePath = "/subscriptions",
-	description = "Manage recurring delivery subscriptions.",
 }: SubscriptionsTableProps) {
 	const router = useRouter()
 	const [params, setParams] = useSubscriptionsParams()
@@ -116,8 +112,6 @@ export function SubscriptionsTable({
 	]
 
 	return (
-		<>
-		<p className="text-sm text-muted-foreground">{description}</p>
 		<DataTable
 			columns={columns}
 			data={subscriptions}
@@ -133,7 +127,6 @@ export function SubscriptionsTable({
 			onRowClick={(row) => router.push(`/subscriptions/${row.id}`)}
 			bulkActions={<Button size="sm" variant="destructive" disabled={loading} onClick={() => handleBulkDelete()}>Delete</Button>}
 			emptyMessage="No subscriptions"
-			emptyDescription="Subscriptions will appear here."
 			filters={
 				<Select
 					value={currentStatus ?? "all"}
@@ -161,6 +154,5 @@ export function SubscriptionsTable({
 				</Select>
 			}
 		/>
-		</>
 	)
 }

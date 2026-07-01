@@ -94,10 +94,6 @@ export function TrackingClient({ items, totalCount, currentPage, currentStatus }
 	]
 
 	return (
-		<>
-		<div>
-			<p className="text-sm text-muted-foreground">Carrier-provided tracking updates for shipments.</p>
-		</div>
 		<DataTable
 			columns={columns}
 			data={items}
@@ -115,7 +111,6 @@ export function TrackingClient({ items, totalCount, currentPage, currentStatus }
 				</Button>
 			}
 			emptyMessage="No shipments tracked"
-			emptyDescription="Tracking info will appear here for shipped orders."
 			filters={
 				<Select
 					value={currentStatus ?? "all"}
@@ -144,6 +139,5 @@ export function TrackingClient({ items, totalCount, currentPage, currentStatus }
 				</Select>
 			}
 		/>
-		</>
 	)
 }

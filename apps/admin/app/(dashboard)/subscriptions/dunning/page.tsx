@@ -19,7 +19,6 @@ export default async function DunningSubscriptionsPage({ searchParams }: PagePro
 					subscriptions={items}
 					totalCount={totalCount}
 					currentStatus="dunning"
-					description="Subscriptions with failed payment attempts requiring attention."
 				/>
 			</Suspense>
 		</div>

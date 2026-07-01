@@ -104,8 +104,7 @@ export function MediaLibrary({ items: initialItems }: { items: MediaItemType[] }
 
 	return (
 		<div className="space-y-4">
-			<div className="flex items-center justify-between">
-				<p className="text-muted-foreground text-sm">Upload and manage images and videos.</p>
+			<div className="flex justify-end">
 				<div className="flex items-center gap-2">
 					<Select value={typeFilter} onValueChange={setTypeFilter}>
 						<SelectTrigger className="w-[120px]">
@@ -137,14 +136,15 @@ export function MediaLibrary({ items: initialItems }: { items: MediaItemType[] }
 				</div>
 			</div>
 
-			<div
+			<button
+				type="button"
 				className="border-2 border-dashed rounded-lg p-8 text-center text-muted-foreground hover:border-primary/50 transition-colors cursor-pointer"
 				onDrop={handleDrop}
 				onDragOver={(e) => e.preventDefault()}
 				onClick={() => fileInputRef.current?.click()}
 			>
 				Drop files here or click to upload
-			</div>
+			</button>
 
 			{filtered.length === 0 ? (
 				<div className="text-center py-12 text-muted-foreground">

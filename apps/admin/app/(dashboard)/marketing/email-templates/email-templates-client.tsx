@@ -150,12 +150,15 @@ export function EmailTemplatesClient({
 			key: "actions",
 			header: "",
 			cell: (row) => (
-				<div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+				<div className="flex items-center gap-1">
 					<Button
 						variant="ghost"
 						size="icon"
 						className="h-7 w-7"
-						onClick={() => router.push(`/marketing/email-templates/${row.id}`)}
+						onClick={(e) => {
+							e.stopPropagation()
+							router.push(`/marketing/email-templates/${row.id}`)
+						}}
 					>
 						<HugeiconsIcon icon={PencilEdit02Icon} size={14} />
 					</Button>
@@ -163,7 +166,10 @@ export function EmailTemplatesClient({
 						variant="ghost"
 						size="icon"
 						className="h-7 w-7 text-destructive hover:text-destructive"
-						onClick={() => handleDelete(row.id, row.name)}
+						onClick={(e) => {
+							e.stopPropagation()
+							handleDelete(row.id, row.name)
+						}}
 					>
 						<HugeiconsIcon icon={Delete02Icon} size={14} />
 					</Button>
@@ -174,10 +180,7 @@ export function EmailTemplatesClient({
 
 	return (
 		<div className="space-y-4">
-			<div className="flex items-center justify-between">
-				<p className="text-sm text-muted-foreground">
-					Create and manage HTML email templates. Connect to Resend to send transactional emails.
-				</p>
+			<div className="flex justify-end">
 				<div className="flex items-center gap-1 rounded-lg border p-1 bg-muted/30 shrink-0">
 					<Button
 						size="sm"

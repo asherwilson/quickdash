@@ -286,15 +286,6 @@ export function CategoriesClient({ categories, totalCount, currentPage }: Catego
 
 	return (
 		<>
-			<div className="flex items-center justify-between">
-				<p className="text-sm text-muted-foreground">
-					Organize products into categories.
-				</p>
-				<div className="flex items-center gap-2 sm:hidden">
-					<Button size="sm" onClick={openCreate}>Add Category</Button>
-				</div>
-			</div>
-
 			<DataTable
 				columns={columns}
 				data={filteredCategories}
@@ -310,7 +301,6 @@ export function CategoriesClient({ categories, totalCount, currentPage }: Catego
 				onReorder={handleReorder}
 				onRowClick={(row) => openEdit(row)}
 				emptyMessage="No categories yet"
-				emptyDescription="Create categories to organize your products."
 				filters={
 					<>
 						<Select value={parentFilter} onValueChange={setParentFilter}>

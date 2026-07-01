@@ -12,7 +12,6 @@ import {
   News01Icon,
   Package01Icon,
   RepeatIcon,
-  Search01Icon,
   Settings02Icon,
   ShoppingBag01Icon,
   StarIcon,
@@ -104,7 +103,6 @@ import {
 } from "@hugeicons/core-free-icons"
 import { NavMain } from "@/components/nav-main"
 import { StorageIndicator } from "@/components/storage-indicator"
-import { useCommandMenu } from "@/components/command-menu"
 import { useSidebarStateProvider, SidebarStateContext } from "@/lib/use-sidebar-state"
 import { useSidebarMode } from "@/lib/sidebar-mode"
 import { useWorkflowStore } from "@/lib/workflow-context"
@@ -112,8 +110,6 @@ import { TRIGGER_CATEGORIES, ACTION_CATEGORIES } from "@/app/(dashboard)/automat
 import type { WorkflowTrigger, WorkflowAction } from "@quickdash/db/schema"
 import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { WorkspaceSwitcher } from "@/components/workspace-switcher"
-import type { WorkspaceContext, WorkspaceWithRole } from "@/lib/workspace"
 import type { WorkspaceFeatures } from "@quickdash/db/schema"
 import {
   Sidebar,
@@ -301,21 +297,6 @@ function DigitalClock() {
         {displayHours.toString().padStart(2, '0')}:{minutes.toString().padStart(2, '0')}
       </span>
       <span className="text-xs text-muted-foreground font-medium">{ampm}</span>
-    </div>
-  )
-}
-
-function NormalHeader({ openCommandMenu }: { openCommandMenu: () => void }) {
-  return (
-    <div className="md:hidden">
-      <button
-        type="button"
-        onClick={openCommandMenu}
-        className="flex md:hidden h-8 w-full items-center gap-2 rounded-md border border-sidebar-border bg-sidebar-accent/50 px-3 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent"
-      >
-        <HugeiconsIcon icon={Search01Icon} size={14} />
-        <span className="flex-1 text-left">Search...</span>
-      </button>
     </div>
   )
 }
@@ -746,18 +727,13 @@ type CollectionNavItem = {
 }
 
 export function AppSidebar({
-  workspaces = [],
-  activeWorkspace = null,
   collections = [],
   features,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
-  workspaces?: WorkspaceWithRole[]
-  activeWorkspace?: WorkspaceContext | WorkspaceWithRole | null
   collections?: CollectionNavItem[]
   features?: WorkspaceFeatures
 }) {
-  const { open: openCommandMenu } = useCommandMenu()
   const sidebarState = useSidebarStateProvider()
   const { mode } = useSidebarMode()
   const isWorkflowMode = mode === "workflow"
@@ -862,19 +838,6 @@ export function AppSidebar({
         {isWorkflowMode && (
           <SidebarHeader>
             <WorkflowHeader />
-          </SidebarHeader>
-        )}
-        {!isWorkflowMode && (
-          <SidebarHeader className={cn("h-16 shrink-0 justify-center px-3 py-2", isMobile && "h-auto")}>
-            <WorkspaceSwitcher
-              workspaces={workspaces}
-              activeWorkspace={activeWorkspace}
-              className="h-12 w-full max-w-none justify-start gap-3 rounded-xl bg-sidebar-accent/60 px-3 text-base"
-              iconClassName="size-8 rounded-lg text-xs"
-            />
-            {isMobile && (
-              <NormalHeader openCommandMenu={openCommandMenu} />
-            )}
           </SidebarHeader>
         )}
             <SidebarContent

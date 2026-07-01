@@ -12,6 +12,7 @@ import { CommandMenuWrapper } from "@/components/command-menu-wrapper"
 import { HeaderToolbar } from "@/components/header-toolbar"
 import { ModeBanner } from "@/components/mode-banner"
 import { PusherProvider } from "@/components/pusher-provider"
+import { WorkspaceSwitcher } from "@/components/workspace-switcher"
 import { MusicPlayerProvider, MusicPlayerLoader } from "@/components/music-player"
 import { ToolbarProvider, ToolbarPanel, WidgetPanels } from "@/components/toolbar"
 import { KeyboardShortcutsProvider } from "@/components/keyboard-shortcuts"
@@ -143,43 +144,50 @@ export default async function DashboardLayout({
         <MusicPlayerProvider>
           <ToolbarProvider features={activeWorkspace?.features}>
               <SidebarModeProvider>
-                <SidebarProvider defaultOpen={sidebarOpen}>
+                <SidebarProvider defaultOpen={sidebarOpen} className="flex-col">
                 <RightSidebarProvider defaultOpen={false}>
                   <CommandMenuWrapper />
                   <KeyboardShortcutsProvider>
-                    <AppSidebar
-                      workspaces={workspaces}
-                      activeWorkspace={activeWorkspace}
-                      collections={collections}
-                      features={activeWorkspace?.features}
-                    />
-                    <SidebarSwipe />
-                    <SidebarInset className="md:flex md:flex-col">
-                      <BreadcrumbProvider>
-                        <header className="sticky top-[var(--mode-banner-height,0px)] z-40 flex h-16 shrink-0 items-center justify-between gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-                          <div className="flex items-center gap-2 px-4 min-w-0">
-                            {/* Mobile sidebar trigger */}
-                            <SidebarTrigger className="md:hidden" />
-                            <div className="min-w-0 overflow-x-auto sm:overflow-hidden [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
-                              <BreadcrumbNav />
-                            </div>
-                          </div>
-                          <HeaderToolbar
-                            storefrontUrl={workspaceCustomDomain || workspaceStorefrontUrl}
-                            initialMaintenanceMode={workspaceMaintenanceMode}
-                            initialSandboxMode={workspaceSandboxMode}
-                            user={{
-                              name: user?.name || session.user.name,
-                              email: session.user.email,
-                              avatar: user?.image || "",
-                            }}
+                    <BreadcrumbProvider>
+                      <header className="sticky top-[var(--mode-banner-height,0px)] z-50 flex h-16 shrink-0 items-center justify-between gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+                        <div className="flex min-w-0 items-center gap-3 px-4">
+                          {/* Mobile sidebar trigger */}
+                          <SidebarTrigger className="md:hidden" />
+                          <WorkspaceSwitcher
+                            workspaces={workspaces}
+                            activeWorkspace={activeWorkspace}
+                            className="h-10 w-[min(240px,45vw)] max-w-none justify-start gap-2 px-2"
+                            iconClassName="size-7"
                           />
-                        </header>
-                        <main className="flex flex-1 flex-col pt-4">
-                          {children}
-                        </main>
-                      </BreadcrumbProvider>
-                    </SidebarInset>
+                          <div className="min-w-0 overflow-x-auto sm:overflow-hidden [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
+                            <BreadcrumbNav />
+                          </div>
+                        </div>
+                        <HeaderToolbar
+                          storefrontUrl={workspaceCustomDomain || workspaceStorefrontUrl}
+                          initialMaintenanceMode={workspaceMaintenanceMode}
+                          initialSandboxMode={workspaceSandboxMode}
+                          user={{
+                            name: user?.name || session.user.name,
+                            email: session.user.email,
+                            avatar: user?.image || "",
+                          }}
+                        />
+                      </header>
+                      <div className="flex min-h-0 flex-1">
+                        <AppSidebar
+                          collections={collections}
+                          features={activeWorkspace?.features}
+                          className="h-[calc(100svh-4rem-var(--mode-banner-height,0px))] max-h-[calc(100svh-4rem-var(--mode-banner-height,0px))]"
+                        />
+                        <SidebarSwipe />
+                        <SidebarInset className="md:flex md:flex-col h-[calc(100svh-4rem-var(--mode-banner-height,0px))] max-h-[calc(100svh-4rem-var(--mode-banner-height,0px))]">
+                          <main className="flex flex-1 flex-col pt-4">
+                            {children}
+                          </main>
+                        </SidebarInset>
+                      </div>
+                    </BreadcrumbProvider>
                     {/* Toolbar Panel - needs RightSidebarProvider */}
                     <ToolbarPanel />
                     <WidgetPanels />

@@ -19,7 +19,6 @@ export default async function PausedSubscriptionsPage({ searchParams }: PageProp
 					subscriptions={items}
 					totalCount={totalCount}
 					currentStatus="paused"
-					description="Subscriptions that have been temporarily paused by customers."
 				/>
 			</Suspense>
 		</div>

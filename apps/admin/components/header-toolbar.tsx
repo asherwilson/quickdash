@@ -37,10 +37,17 @@ import {
 import { useCommandMenu } from "@/components/command-menu"
 import { updateSetting, toggleAllProvidersTestMode } from "@/app/(dashboard)/settings/actions"
 import { toast } from "sonner"
+import { NavUser } from "@/components/nav-user"
 
 import { useToolbar } from "@/components/toolbar"
 
-export function HeaderToolbar({ storefrontUrl, initialMaintenanceMode, initialSandboxMode }: { storefrontUrl?: string | null; initialMaintenanceMode?: boolean; initialSandboxMode?: boolean }) {
+type HeaderUser = {
+  name: string
+  email: string
+  avatar: string
+}
+
+export function HeaderToolbar({ storefrontUrl, initialMaintenanceMode, initialSandboxMode, user }: { storefrontUrl?: string | null; initialMaintenanceMode?: boolean; initialSandboxMode?: boolean; user: HeaderUser }) {
   const [storeOnline, setStoreOnline] = React.useState(!initialMaintenanceMode)
   const [sandboxMode, setSandboxMode] = React.useState(initialSandboxMode ?? false)
   const [confirmOpen, setConfirmOpen] = React.useState(false)
@@ -50,7 +57,7 @@ export function HeaderToolbar({ storefrontUrl, initialMaintenanceMode, initialSa
   const { isOpen: isToolbarOpen, toggleToolbar } = useToolbar()
 
   return (
-    <div className="flex items-center gap-2 px-4">
+    <div className="flex min-w-0 items-center gap-2 px-4">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="size-8">
@@ -277,6 +284,7 @@ export function HeaderToolbar({ storefrontUrl, initialMaintenanceMode, initialSa
 
       <Separator orientation="vertical" className="data-[orientation=vertical]:h-4" />
       <ThemeToggle />
+      <NavUser user={user} variant="avatar" />
     </div>
   )
 }

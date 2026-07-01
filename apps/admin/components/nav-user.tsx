@@ -8,7 +8,6 @@ import {
 } from "@hugeicons/core-free-icons"
 import { signOut } from "@/lib/auth-client"
 import { logSignOut } from "@/app/(dashboard)/settings/sessions/sign-out-action"
-import { usePresence } from "@/hooks/use-presence"
 import { useUserStatus } from "@/hooks/use-user-status"
 
 import {
@@ -43,16 +42,17 @@ const STATUS_OPTIONS: { value: UserStatusMode; label: string }[] = [
 
 export function NavUser({
   user,
+  variant = "sidebar",
 }: {
   user: {
     name: string
     email: string
     avatar: string
   }
+  variant?: "sidebar" | "avatar"
 }) {
   const { isMobile, state } = useSidebar()
   const router = useRouter()
-  const { isConnected } = usePresence()
   const { status, mode, setMode } = useUserStatus()
 
   const handleSignOut = async () => {
@@ -82,6 +82,73 @@ export function NavUser({
     setMode(STATUS_OPTIONS[nextIndex].value)
   }
 
+  const avatarTrigger = (
+    <button
+      type="button"
+      className="relative flex size-8 items-center justify-center overflow-visible rounded-lg outline-none transition-opacity hover:opacity-85 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background data-[state=open]:opacity-85"
+      aria-label="Open account menu"
+    >
+      <Avatar className="h-8 w-8 rounded-lg">
+        {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
+        <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
+      </Avatar>
+      <StatusDot status={status} className="ring-background" />
+    </button>
+  )
+
+  const menuContent = (
+    <DropdownMenuContent
+      className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+      side={isMobile ? "bottom" : variant === "avatar" ? "bottom" : "right"}
+      align="end"
+      sideOffset={4}
+    >
+      <DropdownMenuLabel className="p-0 font-normal">
+        <button
+          type="button"
+          className="flex w-full items-center gap-2 rounded-sm px-1 py-1.5 text-left text-sm transition-colors hover:bg-accent"
+          onClick={() => router.push("/settings/account")}
+        >
+          <Avatar className="h-8 w-8 rounded-lg">
+            {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
+            <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
+          </Avatar>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-medium">{user.name}</span>
+            <span className="truncate text-xs">{user.email}</span>
+          </div>
+        </button>
+      </DropdownMenuLabel>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem
+        onSelect={(e) => {
+          e.preventDefault()
+          cycleStatus()
+        }}
+        className="gap-2"
+      >
+        <StatusIndicator status={status} size="sm" />
+        <span>{currentStatusOption.label}</span>
+      </DropdownMenuItem>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem onClick={handleSignOut}>
+        <HugeiconsIcon icon={Logout01Icon} size={16} />
+        Sign out
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  )
+
+  if (variant === "avatar") {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          {avatarTrigger}
+        </DropdownMenuTrigger>
+        {menuContent}
+      </DropdownMenu>
+    )
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -109,44 +176,7 @@ export function NavUser({
               )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div
-                className="flex items-center gap-2 px-1 py-1.5 text-left text-sm cursor-pointer rounded-sm hover:bg-accent transition-colors"
-                onClick={() => router.push("/settings/account")}
-              >
-                <Avatar className="h-8 w-8 rounded-lg">
-                  {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
-                  <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
-                </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault()
-                cycleStatus()
-              }}
-              className="gap-2"
-            >
-              <StatusIndicator status={status} size="sm" />
-              <span>{currentStatusOption.label}</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut}>
-              <HugeiconsIcon icon={Logout01Icon} size={16} />
-              Sign out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
+          {menuContent}
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>

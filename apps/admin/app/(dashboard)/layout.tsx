@@ -154,12 +154,6 @@ export default async function DashboardLayout({
                   <CommandMenuWrapper />
                   <KeyboardShortcutsProvider>
                     <AppSidebar
-                      user={{
-                        name: user?.name || session.user.name,
-                        email: session.user.email,
-                        avatar: user?.image || "",
-                        role: user?.role || "member",
-                      }}
                       workspaces={workspaces}
                       activeWorkspaceId={activeWorkspace?.id ?? null}
                       collections={collections}
@@ -176,7 +170,16 @@ export default async function DashboardLayout({
                               <BreadcrumbNav />
                             </div>
                           </div>
-                          <HeaderToolbar storefrontUrl={workspaceCustomDomain || workspaceStorefrontUrl} initialMaintenanceMode={workspaceMaintenanceMode} initialSandboxMode={workspaceSandboxMode} />
+                          <HeaderToolbar
+                            storefrontUrl={workspaceCustomDomain || workspaceStorefrontUrl}
+                            initialMaintenanceMode={workspaceMaintenanceMode}
+                            initialSandboxMode={workspaceSandboxMode}
+                            user={{
+                              name: user?.name || session.user.name,
+                              email: session.user.email,
+                              avatar: user?.image || "",
+                            }}
+                          />
                         </header>
                         {children}
                       </BreadcrumbProvider>

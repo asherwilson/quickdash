@@ -103,7 +103,6 @@ import {
   AwardIcon,
 } from "@hugeicons/core-free-icons"
 import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
 import { StorageIndicator } from "@/components/storage-indicator"
 import { useCommandMenu } from "@/components/command-menu"
 import { useSidebarStateProvider, SidebarStateContext } from "@/lib/use-sidebar-state"
@@ -270,13 +269,6 @@ const data = {
       ],
     },
   ],
-}
-
-type UserData = {
-  name: string
-  email: string
-  avatar: string
-  role: string
 }
 
 function DigitalClock() {
@@ -754,14 +746,12 @@ type CollectionNavItem = {
 }
 
 export function AppSidebar({
-  user,
   workspaces = [],
   activeWorkspaceId = null,
   collections = [],
   features,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
-  user: UserData
   workspaces?: WorkspaceWithRole[]
   activeWorkspaceId?: string | null
   collections?: CollectionNavItem[]
@@ -900,7 +890,6 @@ export function AppSidebar({
               </SidebarContent>
               <SidebarFooter>
                 <StorageIndicator />
-                <NavUser user={user} />
               </SidebarFooter>
             </div>
           </div>
@@ -924,7 +913,6 @@ export function AppSidebar({
             </SidebarContent>
             <SidebarFooter>
               <StorageIndicator />
-              <NavUser user={user} />
             </SidebarFooter>
           </>
         )}

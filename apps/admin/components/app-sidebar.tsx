@@ -865,14 +865,15 @@ export function AppSidebar({
           </SidebarHeader>
         )}
         {!isWorkflowMode && (
-          <SidebarHeader>
+          <SidebarHeader className={cn("h-16 shrink-0 justify-center px-3 py-2", isMobile && "h-auto")}>
             <WorkspaceSwitcher
               workspaces={workspaces}
               activeWorkspace={activeWorkspace}
-              className="w-full max-w-none justify-start bg-sidebar-accent/50"
+              className="h-12 w-full max-w-none justify-start gap-3 rounded-xl bg-sidebar-accent/60 px-3 text-base"
+              iconClassName="size-8 rounded-lg text-xs"
             />
             {isMobile && (
-            <NormalHeader openCommandMenu={openCommandMenu} />
+              <NormalHeader openCommandMenu={openCommandMenu} />
             )}
           </SidebarHeader>
         )}

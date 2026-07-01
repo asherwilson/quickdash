@@ -176,10 +176,12 @@ export function WorkspaceSwitcher({
   workspaces,
   activeWorkspace,
   className,
+  iconClassName,
 }: {
   workspaces: WorkspaceWithRole[]
   activeWorkspace: WorkspaceContext | WorkspaceWithRole | null
   className?: string
+  iconClassName?: string
 }) {
   const router = useRouter()
   const [switching, setSwitching] = React.useState(false)
@@ -244,7 +246,10 @@ export function WorkspaceSwitcher({
               className
             )}
           >
-            <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-primary text-[10px] font-semibold text-primary-foreground">
+            <span className={cn(
+              "flex size-6 shrink-0 items-center justify-center rounded-md bg-primary text-[10px] font-semibold text-primary-foreground",
+              iconClassName
+            )}>
               {getInitials(activeWorkspace?.name || "Workspace")}
             </span>
             <span className="truncate">{activeWorkspace?.name || "Workspace"}</span>

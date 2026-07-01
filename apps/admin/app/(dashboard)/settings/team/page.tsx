@@ -30,9 +30,6 @@ export default async function TeamPage({ searchParams }: PageProps) {
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
-      <p className="text-sm text-muted-foreground">
-        Manage who has access to the admin panel.
-      </p>
       <TeamClient
         members={membersData.items}
         membersTotalCount={membersData.totalCount}

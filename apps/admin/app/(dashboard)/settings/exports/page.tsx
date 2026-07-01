@@ -220,10 +220,19 @@ ${sections.join("")}
 
 	return (
 		<div className="flex flex-1 flex-col gap-6 p-4 pt-0">
-			<div className="flex items-center justify-between">
-				<p className="text-sm text-muted-foreground">
-					Download or print your business data for accounting, tax filing, or backup.
-				</p>
+			<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+				<div className="flex items-center gap-2">
+					<Label htmlFor="format">Format</Label>
+					<Select value={format} onValueChange={(v) => setFormat(v as ExportFormat)}>
+						<SelectTrigger id="format" className="w-32">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="xlsx">Excel (.xlsx)</SelectItem>
+							<SelectItem value="csv">CSV (.csv)</SelectItem>
+						</SelectContent>
+					</Select>
+				</div>
 				<div className="flex items-center gap-2">
 					<Button
 						variant="outline"
@@ -244,24 +253,6 @@ ${sections.join("")}
 						{loading === "export-all" ? "Exporting..." : "Export All"}
 					</Button>
 				</div>
-			</div>
-
-			<div className="flex items-center gap-4">
-				<div className="flex items-center gap-2">
-					<Label htmlFor="format">Format</Label>
-					<Select value={format} onValueChange={(v) => setFormat(v as ExportFormat)}>
-						<SelectTrigger id="format" className="w-32">
-							<SelectValue />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="xlsx">Excel (.xlsx)</SelectItem>
-							<SelectItem value="csv">CSV (.csv)</SelectItem>
-						</SelectContent>
-					</Select>
-				</div>
-				<p className="text-xs text-muted-foreground">
-					Excel files work with Microsoft Excel, Apple Numbers, and Google Sheets
-				</p>
 			</div>
 
 			<div className="grid gap-4 md:grid-cols-2">

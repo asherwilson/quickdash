@@ -42,10 +42,6 @@ export default async function ActivityLogPage({ searchParams }: PageProps) {
 
 	return (
 		<div className="flex flex-1 flex-col gap-4 sm:gap-6 p-4 pt-0">
-			<p className="text-sm text-muted-foreground">
-				Recent actions across the admin panel.
-			</p>
-
 			<ActivityLogClient
 				entries={entries}
 				totalCount={Number(total.count)}

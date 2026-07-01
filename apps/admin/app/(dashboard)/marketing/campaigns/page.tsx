@@ -14,9 +14,6 @@ export default async function CampaignsPage({ searchParams }: PageProps) {
 
 	return (
 		<div className="flex flex-1 flex-col gap-4 sm:gap-6 p-4 pt-0">
-			<p className="text-sm text-muted-foreground">
-				Create and manage marketing campaigns to engage customers.
-			</p>
 			<CampaignsTable campaigns={items} totalCount={totalCount} currentPage={page} />
 		</div>
 	)

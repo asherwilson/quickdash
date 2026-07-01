@@ -24,9 +24,6 @@ export default async function CollectionEntriesPage({ params, searchParams }: Pa
 
 	return (
 		<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-			<p className="text-sm text-muted-foreground">
-				{collection.description || `Manage entries in the ${collection.name} collection.`}
-			</p>
 			<EntriesTable
 				collection={collection}
 				entries={items}

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { RichTextEditor } from "@/components/rich-text-editor"
 import { MediaUploader, type MediaItem } from "@/components/media-uploader"
+import { FloatingSaveButton } from "@/components/floating-save-button"
 import { createBlogPost, updateBlogPost, deleteBlogPost } from "../actions"
 import { useDraft, type Draft } from "@/lib/use-draft"
 import { DraftIndicator, DraftStatus } from "@/components/drafts-manager"
@@ -182,9 +183,6 @@ export function BlogPostForm({ post }: { post: BlogPost | null }) {
 					{!isNew && (
 						<Button variant="destructive" onClick={handleDelete}>Delete</Button>
 					)}
-					<Button onClick={handleSave} disabled={saving}>
-						{saving ? "Saving..." : "Save"}
-					</Button>
 				</div>
 			</div>
 
@@ -309,6 +307,9 @@ export function BlogPostForm({ post }: { post: BlogPost | null }) {
 					</Card>
 				</div>
 			</div>
+			<FloatingSaveButton onClick={handleSave} disabled={saving}>
+				{saving ? "Saving..." : "Save"}
+			</FloatingSaveButton>
 		</div>
 	)
 }

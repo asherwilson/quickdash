@@ -20,12 +20,6 @@ export default async function CategoryDetailPage({ params }: PageProps) {
 
 	return (
 		<div className="flex flex-1 flex-col gap-6 p-4 pt-0">
-			<div>
-				<h2 className="text-lg font-semibold">Edit Category</h2>
-				<p className="text-sm text-muted-foreground">
-					Update {category.name}.
-				</p>
-			</div>
 			<CategoryEditForm category={category} categories={categories} />
 		</div>
 	)

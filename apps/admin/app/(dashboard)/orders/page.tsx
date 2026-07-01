@@ -18,10 +18,6 @@ export default async function OrdersPage({ searchParams }: PageProps) {
 
 	return (
 		<div className="flex flex-1 flex-col gap-6 p-4 pt-0">
-			<p className="text-sm text-muted-foreground">
-				View and manage customer orders.
-			</p>
-
 			<Suspense fallback={<div className="h-96 animate-pulse bg-muted rounded-lg" />}>
 				<OrdersTable
 					orders={items}

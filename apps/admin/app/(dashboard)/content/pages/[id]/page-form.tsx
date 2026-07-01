@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { RichTextEditor } from "@/components/rich-text-editor"
+import { FloatingSaveButton } from "@/components/floating-save-button"
 import { createSitePage, updateSitePage, deleteSitePage } from "../../actions"
 import { useDraft, type Draft } from "@/lib/use-draft"
 import { DraftIndicator, DraftStatus } from "@/components/drafts-manager"
@@ -159,9 +160,6 @@ export function PageForm({ page }: { page: SitePage | null }) {
 					{!isNew && (
 						<Button variant="destructive" onClick={handleDelete}>Delete</Button>
 					)}
-					<Button onClick={handleSave} disabled={saving}>
-						{saving ? "Saving..." : "Save"}
-					</Button>
 				</div>
 			</div>
 
@@ -248,6 +246,9 @@ export function PageForm({ page }: { page: SitePage | null }) {
 					</Card>
 				</div>
 			</div>
+			<FloatingSaveButton onClick={handleSave} disabled={saving}>
+				{saving ? "Saving..." : "Save"}
+			</FloatingSaveButton>
 		</div>
 	)
 }

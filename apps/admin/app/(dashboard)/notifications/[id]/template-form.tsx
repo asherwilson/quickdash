@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { RichTextEditor } from "@/components/rich-text-editor"
+import { FloatingSaveButton } from "@/components/floating-save-button"
 import { createEmailTemplate, updateEmailTemplate, deleteEmailTemplate } from "../actions"
 import { useDraft, type Draft } from "@/lib/use-draft"
 import { DraftIndicator, DraftStatus } from "@/components/drafts-manager"
@@ -158,9 +159,6 @@ export function TemplateForm({ template }: { template: EmailTemplate | null }) {
 					{!isNew && (
 						<Button variant="destructive" onClick={handleDelete}>Delete</Button>
 					)}
-					<Button onClick={handleSave} disabled={saving}>
-						{saving ? "Saving..." : "Save"}
-					</Button>
 				</div>
 			</div>
 
@@ -266,6 +264,9 @@ export function TemplateForm({ template }: { template: EmailTemplate | null }) {
 					</Card>
 				</div>
 			</div>
+			<FloatingSaveButton onClick={handleSave} disabled={saving}>
+				{saving ? "Saving..." : "Save"}
+			</FloatingSaveButton>
 		</div>
 	)
 }

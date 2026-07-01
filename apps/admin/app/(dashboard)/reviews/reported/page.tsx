@@ -17,10 +17,6 @@ export default async function ReportedReviewsPage({ searchParams }: PageProps) {
 
 	return (
 		<div className="flex flex-1 flex-col gap-6 p-4 pt-0">
-			<p className="text-sm text-muted-foreground">
-				Rejected reviews.
-			</p>
-
 			<Suspense fallback={<div className="h-96 animate-pulse bg-muted rounded-lg" />}>
 				<ReviewsTable
 					reviews={items}

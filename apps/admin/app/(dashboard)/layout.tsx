@@ -175,7 +175,9 @@ export default async function DashboardLayout({
                             }}
                           />
                         </header>
-                        {children}
+                        <main className="flex flex-1 flex-col pt-4">
+                          {children}
+                        </main>
                       </BreadcrumbProvider>
                     </SidebarInset>
                     {/* Toolbar Panel - needs RightSidebarProvider */}

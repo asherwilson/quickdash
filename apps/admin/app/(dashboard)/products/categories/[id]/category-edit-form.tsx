@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { useBreadcrumbOverride } from "@/components/breadcrumb-context"
 import { MediaUploader, type MediaItem } from "@/components/media-uploader"
+import { FloatingSaveButton } from "@/components/floating-save-button"
 import { updateCategory } from "../actions"
 
 interface Category {
@@ -97,13 +98,13 @@ export function CategoryEditForm({ category, categories }: Props) {
 				</Select>
 			</div>
 			<div className="flex gap-3 pt-4">
-				<Button onClick={handleSave} disabled={loading}>
-					{loading ? "Saving..." : "Save Changes"}
-				</Button>
 				<Button variant="outline" onClick={() => router.push("/products/categories")}>
 					Cancel
 				</Button>
 			</div>
+			<FloatingSaveButton onClick={handleSave} disabled={loading}>
+				{loading ? "Saving..." : "Save Changes"}
+			</FloatingSaveButton>
 		</div>
 	)
 }

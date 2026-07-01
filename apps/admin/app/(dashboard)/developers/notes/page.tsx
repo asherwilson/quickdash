@@ -17,7 +17,6 @@ export default async function DeveloperNotesPage({ searchParams }: PageProps) {
 
 	return (
 		<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-			<p className="text-sm text-muted-foreground">Track bugs, issues, and notes.</p>
 			<NotesTable notes={items} users={allUsers} totalCount={totalCount} currentPage={page} />
 		</div>
 	)

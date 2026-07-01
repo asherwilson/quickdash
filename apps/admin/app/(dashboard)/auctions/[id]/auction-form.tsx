@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { ArrowLeft01Icon, Calendar01Icon } from "@hugeicons/core-free-icons"
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -19,6 +19,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useBreadcrumbOverride } from "@/components/breadcrumb-context"
 import { MediaUploader, type MediaItem } from "@/components/media-uploader"
+import { FloatingSaveButton } from "@/components/floating-save-button"
 import { createAuction, updateAuction, publishAuction } from "../actions"
 import { toast } from "sonner"
 import type { Auction } from "@quickdash/db/schema"
@@ -157,19 +158,8 @@ export function AuctionForm({ auction, products }: AuctionFormProps) {
 					>
 						<HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
 					</Button>
-					<div>
-						<h2 className="text-lg font-semibold">
-							{isEditing ? "Edit Auction" : "Create Auction"}
-						</h2>
-						<p className="text-sm text-muted-foreground">
-							{isEditing ? "Update auction details" : "Set up a new auction"}
-						</p>
-					</div>
 				</div>
 				<div className="flex items-center gap-2">
-					<Button type="submit" variant="outline" disabled={loading}>
-						{loading ? "Saving..." : "Save Draft"}
-					</Button>
 					<Button
 						type="button"
 						onClick={(e) => handleSubmit(e, true)}
@@ -386,7 +376,7 @@ export function AuctionForm({ auction, products }: AuctionFormProps) {
 										min="1"
 										max="30"
 										value={autoExtendMinutes}
-										onChange={(e) => setAutoExtendMinutes(parseInt(e.target.value) || 5)}
+									onChange={(e) => setAutoExtendMinutes(parseInt(e.target.value, 10) || 5)}
 									/>
 									<p className="text-xs text-muted-foreground">
 										If a bid is placed in the last {autoExtendMinutes} minutes,
@@ -398,6 +388,9 @@ export function AuctionForm({ auction, products }: AuctionFormProps) {
 					</Card>
 				</div>
 			</div>
+			<FloatingSaveButton type="submit" disabled={loading}>
+				{loading ? "Saving..." : "Save Draft"}
+			</FloatingSaveButton>
 		</form>
 	)
 }

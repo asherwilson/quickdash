@@ -38,10 +38,6 @@ export default async function AnalyticsOverviewPage() {
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
-      <p className="text-sm text-muted-foreground">
-        Store performance for the last 30 days.
-      </p>
-
       {/* KPI Cards - Live updating */}
       <AnalyticsStats
         revenue={revenue}

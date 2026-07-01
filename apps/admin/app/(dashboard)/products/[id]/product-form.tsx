@@ -12,6 +12,7 @@ import { StatusBadge } from "@/components/status-badge"
 import { slugify } from "@/lib/format"
 import { useBreadcrumbOverride } from "@/components/breadcrumb-context"
 import { MediaUploader, type MediaItem } from "@/components/media-uploader"
+import { FloatingSaveButton } from "@/components/floating-save-button"
 import { createProduct, updateProduct, createVariant, deleteVariant } from "../actions"
 import { useDraft, type Draft } from "@/lib/use-draft"
 import { DraftIndicator, DraftStatus } from "@/components/drafts-manager"
@@ -338,9 +339,6 @@ export function ProductForm({ product, categories }: ProductFormProps) {
 				</div>
 				<div className="flex flex-row-reverse sm:flex-row items-center gap-2 w-full rounded-lg border p-3 sm:w-auto sm:border-0 sm:p-0">
 					{isNew && <DraftStatus lastSaved={draftLastSaved} isSaving={draftIsSaving} />}
-					<Button onClick={handleSave} disabled={loading} size="sm" className="flex-1 sm:flex-initial">
-						{loading ? "Saving..." : isNew ? "Create Product" : "Save Changes"}
-					</Button>
 					<Button variant="outline" size="sm" onClick={() => router.push("/products")} className="flex-1 sm:flex-initial">
 						Cancel
 					</Button>
@@ -591,15 +589,9 @@ export function ProductForm({ product, categories }: ProductFormProps) {
 				</div>
 			</div>
 
-			{/* Bottom actions (mobile only) */}
-			<div className="flex flex-row-reverse items-center gap-2 w-full rounded-lg border p-3 sm:hidden">
-				<Button onClick={handleSave} disabled={loading} size="sm" className="flex-1">
-					{loading ? "Saving..." : isNew ? "Create Product" : "Save Changes"}
-				</Button>
-				<Button variant="outline" size="sm" onClick={() => router.push("/products")} className="flex-1">
-					Cancel
-				</Button>
-			</div>
+			<FloatingSaveButton onClick={handleSave} disabled={loading}>
+				{loading ? "Saving..." : isNew ? "Create Product" : "Save Changes"}
+			</FloatingSaveButton>
 		</div>
 	)
 }
